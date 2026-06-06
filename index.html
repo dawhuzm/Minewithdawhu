@@ -37,15 +37,27 @@
             overflow: hidden;
         }
 
-        .progress-ring {
+        .progress-container {
             position: relative;
             width: 200px;
             height: 200px;
             margin: 20px auto;
         }
 
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.8s linear;
+        .progress-ring {
+            width: 200px;
+            height: 200px;
+        }
+
+        .center-coin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 68px;
+            z-index: 10;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.9));
+            pointer-events: none;
         }
 
         .status {
@@ -108,13 +120,17 @@
     <div class="mining-area" id="miningArea">
         <h2>🪙 Active Self Miner 🪙</h2>
         
-        <div class="progress-ring">
-            <svg width="200" height="200">
+        <div class="progress-container">
+            <!-- Progress Ring -->
+            <svg class="progress-ring" width="200" height="200">
                 <circle class="progress-ring__bg" cx="100" cy="100" r="93" fill="none" stroke="#0a0022" stroke-width="18"/>
                 <circle id="progressCircle" class="progress-ring__circle" cx="100" cy="100" r="93" 
                         fill="none" stroke="#00aaff" stroke-width="18"
                         stroke-dasharray="584" stroke-dashoffset="584" stroke-linecap="round"/>
             </svg>
+            
+            <!-- Black Coin in Center -->
+            <div class="center-coin" id="centerCoin">⚫</div>
         </div>
 
         <div class="status" id="status">Tap button to start mining</div>
