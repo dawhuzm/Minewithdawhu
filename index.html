@@ -133,14 +133,14 @@
 
     <!-- Mining Area -->
     <div class="mining-area" id="miningArea">
-        <h2>🤑 mine $Dawhu ⛏️</h2>
+        <h2>Mining $Dawhu ⛏️</h2>
         
         <div class="progress-container">
             <!-- Progress Ring -->
             <svg class="progress-ring" width="220" height="220">
                 <circle class="progress-ring__bg" cx="110" cy="110" r="98" fill="none" stroke="#0a0022" stroke-width="20"/>
                 <circle id="progressCircle" class="progress-ring__circle" cx="110" cy="110" r="98" 
-                        fill="none" stroke="#00aaff" stroke-width="20"
+                        fill="none" stroke="#00ff88" stroke-width="20"
                         stroke-dasharray="615" stroke-dashoffset="615" stroke-linecap="round"/>
             </svg>
             
@@ -169,11 +169,13 @@
         let isMining = false;
         let minedAmount = 0;
         let miningInterval = null;
+        let startTime = null;
 
         const statusEl = document.getElementById('status');
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
 
+        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
         const circumference = 615;
 
         function updateUI() {
@@ -194,21 +196,24 @@
             
             isMining = true;
             minedAmount = 0;
+            startTime = Date.now();
             updateProgress(0);
 
-            statusEl.textContent = "Mining in progress...";
+            statusEl.textContent = "Mining in progress... (5 Hours)";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
 
-            let progress = 0;
-
             miningInterval = setInterval(() => {
-                minedAmount += 0.45;
-                progress += 100 / 30;
-                updateProgress(Math.min(progress, 100));
-            }, 800);
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
+                
+                minedAmount = (elapsed / TOTAL_MINING_TIME) * 135; // Total ~135 DHU in 5 hours
+                updateProgress(progress);
 
-            setTimeout(() => finishMining(), 30000);
+                if (progress >= 100) {
+                    finishMining();
+                }
+            }, 1000); // Update every second
         }
 
         function finishMining() {
