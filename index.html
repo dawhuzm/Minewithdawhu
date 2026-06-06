@@ -6,7 +6,6 @@
     <title>Dawhu Miner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Same beautiful styles as before - unchanged */
         body { 
             margin:0; padding:0; background: #0a001f; color:#fff; font-family:sans-serif; 
             text-align:center; min-height:100vh; overflow: hidden;
@@ -65,7 +64,12 @@
             z-index: 10;
         }
 
-        .status { font-size: 17px; margin: 15px 0 12px; min-height: 26px; }
+        .status { 
+            font-size: 17px; 
+            margin: 15px 0 12px; 
+            min-height: 52px;
+            line-height: 1.4;
+        }
         
         .action-btn {
             background: linear-gradient(#00ff88, #00cc66);
@@ -122,7 +126,7 @@
             <div class="center-coin" id="centerCoin">$DHU</div>
         </div>
 
-        <div class="status" id="status">Tap button to start mining</div>
+        <div class="status" id="status">Tap to start 5-hour mining</div>
         
         <button id="actionBtn" class="action-btn">START MINING</button>
     </div>
@@ -143,8 +147,9 @@
         let isMining = false;
         let miningStartTime = null;
         let userId = null;
+        let countdownInterval = null;
 
-        const API_BASE = "https://your-backend.com/api"; // ← CHANGE THIS
+        const API_BASE = "https://your-backend.com/api";   // ← CHANGE TO YOUR REAL API
 
         const statusEl = document.getElementById('status');
         const actionBtn = document.getElementById('actionBtn');
@@ -155,9 +160,8 @@
         const TOTAL_REWARD = 1000;
         const circumference = 560;
 
-        // Get Telegram User ID
         function getUserId() {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            if (tg.initDataUnsafe?.user) {
                 userId = tg.initDataUnsafe.user.id;
                 document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name || "Player";
                 return userId;
@@ -165,44 +169,30 @@
             return null;
         }
 
-        // Save progress to backend
-        async function saveProgress() {
-            if (!userId) return;
+        async function apiRequest(endpoint, method = 'GET', body = null) {
             try {
-                await fetch(`${API_BASE}/save`, {
-                    method: 'POST',
+                const res = await fetch(`${API_BASE}${endpoint}`, {
+                    method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        balance: balance,
-                        last_mining_start: miningStartTime
-                    })
+                    body: body ? JSON.stringify(body) : null
                 });
-            } catch (e) { console.log("Save failed", e); }
+                return await res.json();
+            } catch (e) {
+                console.error(e);
+                return { success: false };
+            }
         }
 
-        // Load progress from backend
-        async function loadProgress() {
+        async function loadUserData() {
             if (!userId) return;
-            try {
-                const res = await fetch(`${API_BASE}/load?user_id=${userId}`);
-                const data = await res.json();
-                
-                if (data.success) {
-                    balance = parseFloat(data.balance) || 0;
-                    miningStartTime = data.last_mining_start ? new Date(data.last_mining_start) : null;
-                    updateUI();
-                    
-                    // Resume mining if it was active
-                    if (miningStartTime) {
-                        const elapsed = Date.now() - miningStartTime.getTime();
-                        if (elapsed < TOTAL_MINING_TIME) {
-                            resumeMining(elapsed);
-                        }
-                    }
+            const data = await apiRequest(`/load?user_id=${userId}`);
+            if (data.success) {
+                balance = parseFloat(data.balance) || 0;
+                if (data.mining_start_time) {
+                    miningStartTime = new Date(data.mining_start_time);
+                    checkMiningStatus();
                 }
-            } catch (e) {
-                console.log("Load failed, using local fallback");
+                updateUI();
             }
         }
 
@@ -215,60 +205,96 @@
             progressCircle.style.strokeDashoffset = offset;
         }
 
-        function showSection(section) {
-            tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
+        function formatTimeLeft(ms) {
+            if (ms <= 0) return "00:00:00";
+            const hours = Math.floor(ms / 3600000);
+            const minutes = Math.floor((ms % 3600000) / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        }
+
+        function checkMiningStatus() {
+            if (!miningStartTime) return;
+
+            const elapsed = Date.now() - miningStartTime.getTime();
+            const remaining = TOTAL_MINING_TIME - elapsed;
+
+            if (remaining <= 0) {
+                // Mining finished
+                isMining = false;
+                statusEl.textContent = `✅ Mining Complete!\nYou earned ${TOTAL_REWARD} $DHU`;
+                actionBtn.textContent = `CLAIM ${TOTAL_REWARD} $DHU`;
+                actionBtn.classList.remove('mining');
+                updateProgress(100);
+            } else {
+                // Still mining
+                isMining = true;
+                actionBtn.textContent = "MINING IN PROGRESS...";
+                actionBtn.classList.add('mining');
+                updateProgress((elapsed / TOTAL_MINING_TIME) * 100);
+
+                // Live Countdown
+                if (countdownInterval) clearInterval(countdownInterval);
+                countdownInterval = setInterval(() => {
+                    const newRemaining = TOTAL_MINING_TIME - (Date.now() - miningStartTime.getTime());
+                    if (newRemaining <= 0) {
+                        clearInterval(countdownInterval);
+                        checkMiningStatus();
+                    } else {
+                        statusEl.textContent = `Mining in progress...\n${formatTimeLeft(newRemaining)} left`;
+                    }
+                }, 1000);
+            }
         }
 
         async function startMining() {
             if (isMining) return;
-            
-            isMining = true;
+
             miningStartTime = new Date();
-            
-            updateProgress(0);
-            statusEl.textContent = "Mining in progress... (5 hours)";
+            isMining = true;
+
+            await apiRequest('/start-mining', 'POST', {
+                user_id: userId,
+                start_time: miningStartTime.toISOString()
+            });
+
+            statusEl.textContent = "Mining started...";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
-
-            await saveProgress(); // Save start time
-
-            const interval = setInterval(async () => {
-                const elapsed = Date.now() - miningStartTime.getTime();
-                let progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
-
-                updateProgress(progress);
-
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    finishMining();
-                }
-            }, 2000);
-        }
-
-        function finishMining() {
-            isMining = false;
-            statusEl.textContent = `✅ Mining Complete! +${TOTAL_REWARD} $DHU`;
-            actionBtn.textContent = "CLAIM 1000 $DHU";
-            actionBtn.classList.remove('mining');
-            saveProgress();
-        }
-
-        function claimReward() {
-            balance += TOTAL_REWARD;
-            updateUI();
-            saveProgress();
-
-            statusEl.textContent = "Tap button to start mining";
-            actionBtn.textContent = "START MINING";
             updateProgress(0);
+
+            checkMiningStatus();
         }
 
-        // Event Listeners
+        async function claimReward() {
+            if (!isMining && miningStartTime) {
+                balance += TOTAL_REWARD;
+                updateUI();
+
+                await apiRequest('/claim', 'POST', {
+                    user_id: userId,
+                    reward: TOTAL_REWARD
+                });
+
+                // Reset
+                miningStartTime = null;
+                updateProgress(0);
+                statusEl.textContent = "Tap to start 5-hour mining";
+                actionBtn.textContent = "START MINING";
+                actionBtn.classList.remove('mining');
+            }
+        }
+
+        function showSection(section) {
+            tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
+        }
+
+        // Button Click
         actionBtn.addEventListener('click', () => {
-            if (!isMining && actionBtn.textContent === "START MINING") {
-                startMining();
-            } else if (actionBtn.textContent.includes("CLAIM")) {
+            if (actionBtn.textContent.includes("CLAIM")) {
                 claimReward();
+            } else if (!isMining) {
+                startMining();
             }
         });
 
@@ -276,15 +302,11 @@
         window.onload = async () => {
             userId = getUserId();
             if (userId) {
-                await loadProgress();
+                await loadUserData();
             } else {
-                alert("Could not get Telegram user data");
+                statusEl.textContent = "Error: Could not load user data";
             }
-            updateUI();
         };
-
-        // Auto-save every 30 seconds
-        setInterval(saveProgress, 30000);
     </script>
 </body>
 </html>
