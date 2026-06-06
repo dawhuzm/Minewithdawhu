@@ -24,41 +24,77 @@
         .profile-card {
             display: flex; align-items: center; gap: 10px;
         }
+
+        /* Purple Sparkle Mining Area */
         .mining-area {
             margin: 70px 20px 100px;
-            background: linear-gradient(145deg, #2a0055, #4a0088);
-            border: 4px solid #ff8800;
-            border-radius: 24px;
-            padding: 20px 15px;
-            box-shadow: 0 0 30px rgba(255, 136, 0, 0.7),
-                        inset 0 0 40px rgba(138, 43, 226, 0.5);
+            background: linear-gradient(145deg, #4a0088, #2a0055, #1a0033);
+            border-radius: 28px;
+            padding: 25px 15px 30px;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.8),
+                        0 0 70px rgba(236, 72, 153, 0.4),
+                        inset 0 0 60px rgba(168, 85, 247, 0.5);
             position: relative;
             overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.6);
         }
+
+        .mining-area::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            animation: pulse 8s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
         .mining-area h2 {
-            color: #00ffff;
-            text-shadow: 0 0 15px #00ffff;
-            margin-bottom: 15px;
+            color: #ffd700;
+            font-size: 24px;
+            text-shadow: 0 0 20px #ffd700,
+                         0 0 30px #a855f7;
+            margin-bottom: 12px;
+            z-index: 2;
+            position: relative;
         }
+
         .penguin {
-            font-size: 110px;
-            margin: 10px 0;
-            animation: bounce 2s infinite;
-            filter: drop-shadow(0 0 15px #ffd700);
+            font-size: 130px;
+            margin: 10px 0 8px;
+            animation: mineAnim 2.2s infinite;
+            filter: drop-shadow(0 0 25px #ffd700);
+            z-index: 2;
+            position: relative;
         }
+
+        @keyframes mineAnim {
+            0%, 100% { transform: rotate(-12deg) translateY(0); }
+            50% { transform: rotate(12deg) translateY(-8px); }
+        }
+
         .coin {
             position: absolute;
-            font-size: 32px;
+            font-size: 34px;
             color: #ffd700;
-            text-shadow: 0 0 12px gold;
-            animation: floatCoin 4s linear infinite;
+            text-shadow: 0 0 15px gold, 0 0 25px #fff;
+            animation: floatCoin 4.5s linear infinite;
             user-select: none;
+            z-index: 1;
         }
+
         @keyframes floatCoin {
-            0% { transform: translateY(100px) scale(0.6); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(-280px) scale(1.1); opacity: 0; }
+            0% { transform: translateY(120px) scale(0.5) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { transform: translateY(-320px) scale(1.2) rotate(360deg); opacity: 0; }
         }
+
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             display: flex; justify-content: space-around; 
@@ -96,11 +132,13 @@
         </div>
     </div>
 
-    <!-- Mining Area -->
+    <!-- Mining Area - Purple Sparkle Style -->
     <div class="mining-area" id="miningArea">
         <h2>🪙 Active Self Miner 🪙</h2>
         <div class="penguin">🐧</div>
-        <p style="color:#ffd700; font-size:18px; margin:10px 0;">Mining DHU Coins...</p>
+        <p style="color:#ffd700; font-size:19px; margin:8px 0 15px; text-shadow: 0 0 10px #a855f7;">
+            Mining DHU Coins...
+        </p>
     </div>
 
     <!-- Bottom Navigation -->
@@ -138,34 +176,34 @@
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        // Floating coins animation
+        // Floating coins
         function createFloatingCoin() {
             const area = document.getElementById('miningArea');
             const coin = document.createElement('div');
             coin.className = 'coin';
             coin.textContent = '🪙';
             
-            const left = Math.random() * 70 + 15;
+            const left = Math.random() * 75 + 12;
             coin.style.left = left + '%';
-            coin.style.bottom = '60px';
-            coin.style.animationDuration = (3 + Math.random() * 3) + 's';
+            coin.style.bottom = '80px';
+            coin.style.animationDuration = (3.5 + Math.random() * 3) + 's';
+            coin.style.opacity = Math.random() * 0.6 + 0.7;
             
             area.appendChild(coin);
-            
-            setTimeout(() => coin.remove(), 6000);
+            setTimeout(() => coin.remove(), 8000);
         }
 
-        // Auto floating coins
+        // More frequent & multiple coins
         setInterval(() => {
-            if (Math.random() > 0.3) createFloatingCoin();
-        }, 400);
+            if (Math.random() > 0.25) createFloatingCoin();
+        }, 280);
 
         // Passive mining
         setInterval(() => {
-            balance += 0.015;
+            balance += 0.018;
             updateUI();
             localStorage.setItem('dawBalance', balance);
-        }, 6000);
+        }, 5500);
 
         updateUI();
     </script>
