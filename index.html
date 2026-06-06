@@ -6,95 +6,15 @@
     <title>Dawhu Miner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { 
-            margin:0; padding:0; background: #0a001f; color:#fff; font-family:sans-serif; 
-            text-align:center; min-height:100vh; overflow: hidden;
-        }
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 8px; gap: 6px; background: rgba(0,0,0,0.95);
-        }
-        .top-card, .profile-card {
-            background: linear-gradient(145deg, #2a0055, #4a0088);
-            border: 3px solid #ff8800;
-            color: white; padding: 8px 10px; border-radius: 16px;
-            box-shadow: 0 0 15px rgba(255, 136, 0, 0.6);
-            flex: 1; text-align: center;
-        }
-        .profile-card {
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        .mining-area {
-            margin: 15px 15px 80px;
-            background: linear-gradient(145deg, #4a0088, #2a0055, #1a0033);
-            border-radius: 28px;
-            padding: 25px 15px 35px;
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.8),
-                        0 0 70px rgba(236, 72, 153, 0.4),
-                        inset 0 0 60px rgba(168, 85, 247, 0.5);
-        }
-
-        .progress-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 15px auto;
-        }
-
-        .center-coin {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(145deg, #2a7cff, #1a5be0, #0f3da8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 0 35px #00ff88, 0 0 60px #00ff88,
-                        inset 0 0 30px rgba(255,255,255,0.5),
-                        0 8px 25px rgba(0,0,0,0.7);
-            border: 12px solid #0a0022;
-            z-index: 10;
-        }
-
-        .status { 
-            font-size: 17px; 
-            margin: 15px 0 12px; 
-            min-height: 56px;
-            line-height: 1.4;
-        }
-        
-        .action-btn {
-            background: linear-gradient(#00ff88, #00cc66);
-            color: black; font-weight: bold; font-size: 18px;
-            padding: 15px 40px; border: none; border-radius: 12px;
-            margin: 10px auto; cursor: pointer; box-shadow: 0 0 25px #00ff88;
-            width: 85%; max-width: 300px;
-        }
-        .action-btn.mining {
-            background: linear-gradient(#ffaa00, #ff8800);
-            box-shadow: 0 0 20px #ffaa00;
-        }
-
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            display: flex; justify-content: space-around; 
-            background: rgba(10,0,30,0.98); padding: 10px 6px; gap: 6px;
-        }
-        .nav-card {
-            background: linear-gradient(145deg, #2a0055, #4a0088);
-            border: 3px solid #ff8800; color: white; padding: 10px 6px;
-            border-radius: 16px; flex: 1; font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 136, 0, 0.6);
-            cursor: pointer; font-size: 13px;
-        }
+        /* Keep your original beautiful styles here */
+        body { margin:0; padding:0; background: #0a001f; color:#fff; font-family:sans-serif; text-align:center; min-height:100vh; overflow: hidden;}
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 8px; gap: 6px; background: rgba(0,0,0,0.95); }
+        .top-card, .profile-card { background: linear-gradient(145deg, #2a0055, #4a0088); border: 3px solid #ff8800; color: white; padding: 8px 10px; border-radius: 16px; box-shadow: 0 0 15px rgba(255, 136, 0, 0.6); flex: 1; text-align: center; }
+        .profile-card { display: flex; align-items: center; gap: 8px; }
+        .mining-area { margin: 15px 15px 80px; background: linear-gradient(145deg, #4a0088, #2a0055, #1a0033); border-radius: 28px; padding: 25px 15px 35px; box-shadow: 0 0 40px rgba(168, 85, 247, 0.8); }
+        .status { font-size: 17px; margin: 15px 0 12px; min-height: 56px; line-height: 1.4; white-space: pre-line; }
+        .action-btn { background: linear-gradient(#00ff88, #00cc66); color: black; font-weight: bold; font-size: 18px; padding: 15px 40px; border: none; border-radius: 12px; margin: 10px auto; cursor: pointer; box-shadow: 0 0 25px #00ff88; width: 85%; max-width: 300px; }
+        .action-btn.mining { background: linear-gradient(#ffaa00, #ff8800); box-shadow: 0 0 20px #ffaa00; }
     </style>
 </head>
 <body>
@@ -103,35 +23,21 @@
             <div style="width:42px;height:42px;background:linear-gradient(#ff00ff,#00ffff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid #fff;">👤</div>
             <div><strong id="username">Player</strong></div>
         </div>
-        <div class="top-card">
-            <strong id="balance">0.00</strong> Dhu
-        </div>
+        <div class="top-card"><strong id="balance">0.00</strong> Dhu</div>
         <div class="top-card">💼 Wallet</div>
     </div>
 
     <div class="mining-area">
         <h2>Mining $Dawhu ⛏️</h2>
-        
         <div class="progress-container">
             <svg width="200" height="200">
                 <circle cx="100" cy="100" r="89" fill="none" stroke="#0a0022" stroke-width="18"/>
-                <circle id="progressCircle" cx="100" cy="100" r="89" 
-                        fill="none" stroke="#00ff88" stroke-width="18"
-                        stroke-dasharray="560" stroke-dashoffset="560" stroke-linecap="round"/>
+                <circle id="progressCircle" cx="100" cy="100" r="89" fill="none" stroke="#00ff88" stroke-width="18" stroke-dasharray="560" stroke-dashoffset="560" stroke-linecap="round"/>
             </svg>
             <div class="center-coin">$DHU</div>
         </div>
-
         <div class="status" id="status">Loading mining status...</div>
-        
         <button id="actionBtn" class="action-btn">START MINING</button>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-card" onclick="showSection('home')">🏠 HOME</div>
-        <div class="nav-card" onclick="showSection('tasks')">🧰 TASKS</div>
-        <div class="nav-card" onclick="showSection('invite')">🫂 INVITE</div>
-        <div class="nav-card" onclick="showSection('profile')">🪪 PROFILE</div>
     </div>
 
     <script>
@@ -141,10 +47,12 @@
         let userId = null;
         let balance = 0;
         let miningStartTime = null;
-        let isMining = false;
+        let countdownInterval = null;
 
-        const API_BASE = "https://dawhu-api.onrender.com/api";   // ← Put your real URL here
-        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours
+        // === CHANGE THIS TO YOUR NEW BACKEND URL ===
+        const API_BASE = "https://your-new-backend.up.railway.app/api";
+
+        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000;
         const TOTAL_REWARD = 1000;
         const circumference = 560;
 
@@ -162,20 +70,16 @@
                 });
                 return await res.json();
             } catch(e) {
-                console.error(e);
+                statusEl.textContent = "❌ Server not connected";
                 return {success: false};
             }
         }
 
-        function updateUI() {
-            balanceEl.textContent = balance.toFixed(2);
-        }
-
+        function updateUI() { balanceEl.textContent = balance.toFixed(2); }
         function updateProgress(percent) {
             const offset = circumference - (percent / 100) * circumference;
             progressCircle.style.strokeDashoffset = offset;
         }
-
         function formatTimeLeft(ms) {
             const h = Math.floor(ms / 3600000);
             const m = Math.floor((ms % 3600000) / 60000);
@@ -186,17 +90,17 @@
         async function loadData() {
             if (!userId) return;
             const data = await api(`/load?user_id=${userId}`);
-            
             if (data.success) {
                 balance = parseFloat(data.balance) || 0;
                 miningStartTime = data.mining_start_time ? new Date(data.mining_start_time) : null;
-                
                 updateUI();
                 checkMiningProgress();
             }
         }
 
         function checkMiningProgress() {
+            if (countdownInterval) clearInterval(countdownInterval);
+
             if (!miningStartTime) {
                 statusEl.textContent = "Tap to start 5-hour mining";
                 actionBtn.textContent = "START MINING";
@@ -209,41 +113,31 @@
             const remaining = TOTAL_MINING_TIME - elapsed;
 
             if (remaining <= 0) {
-                // Ready to claim
-                isMining = false;
                 statusEl.textContent = `✅ Mining Complete!\nYou earned ${TOTAL_REWARD} $DHU`;
                 actionBtn.textContent = `CLAIM ${TOTAL_REWARD} $DHU`;
                 actionBtn.classList.remove('mining');
                 updateProgress(100);
             } else {
-                // Still mining
-                isMining = true;
                 actionBtn.textContent = "MINING IN PROGRESS...";
                 actionBtn.classList.add('mining');
                 updateProgress((elapsed / TOTAL_MINING_TIME) * 100);
 
-                // Live Countdown
-                setInterval(() => {
+                countdownInterval = setInterval(() => {
                     const newRemaining = TOTAL_MINING_TIME - (Date.now() - miningStartTime.getTime());
                     if (newRemaining > 0) {
                         statusEl.textContent = `Mining in progress...\n${formatTimeLeft(newRemaining)} left`;
+                    } else {
+                        checkMiningProgress();
                     }
                 }, 1000);
             }
         }
 
         async function startMining() {
-            if (isMining) return;
-
+            if (miningStartTime) return;
             miningStartTime = new Date();
-            const res = await api('/start-mining', 'POST', {
-                user_id: userId,
-                start_time: miningStartTime.toISOString()
-            });
-
-            if (res.success) {
-                checkMiningProgress();
-            }
+            const res = await api('/start-mining', 'POST', { user_id: userId, start_time: miningStartTime.toISOString() });
+            if (res.success) checkMiningProgress();
         }
 
         async function claimReward() {
@@ -257,21 +151,15 @@
         }
 
         actionBtn.addEventListener('click', () => {
-            if (actionBtn.textContent.includes("CLAIM")) {
-                claimReward();
-            } else {
-                startMining();
-            }
+            if (actionBtn.textContent.includes("CLAIM")) claimReward();
+            else startMining();
         });
 
-        // Initialize
         window.onload = () => {
             if (tg.initDataUnsafe?.user) {
                 userId = tg.initDataUnsafe.user.id;
-                document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name;
+                document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name || "Player";
                 loadData();
-            } else {
-                statusEl.textContent = "Error loading user data";
             }
         };
     </script>
