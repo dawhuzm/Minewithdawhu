@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Dawhu Self Miner</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { margin:0; padding:15px; background:linear-gradient(#0a001f,#1a0033); color:#0ff; font-family:sans-serif; text-align:center; }
+        h1 { color:#0f0; text-shadow:0 0 10px #0f0; }
+        #balance { font-size:2.2em; color:#ff0; margin:10px 0; }
+        #power { color:#0ff; font-size:1.2em; }
+        .mine-btn { width:230px; height:230px; font-size:85px; background:#220033; border:8px solid #0ff; border-radius:50%; margin:20px auto; display:flex; align-items:center; justify-content:center; box-shadow:0 0 35px #0ff; }
+        button { background:#220044; color:#0ff; border:2px solid #0ff; padding:14px; margin:8px 4px; width:46%; border-radius:8px; font-size:1em; }
+        .log { max-height:200px; overflow:auto; text-align:left; background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; margin-top:20px; font-size:0.9em; }
+    </style>
+</head>
+<body>
+    <h1>⛏️ DAWHU SELF MINER</h1>
+    <p id="balance">0.0000 DAW</p>
+    <p id="power">Mining Power: 15 H/s</p>
+
+    <div id="mine-btn" class="mine-btn">⛏️</div>
+
+    <div>
+        <button onclick="claimReward()">Claim Reward</button>
+        <button onclick="buyUpgrade()">Upgrade Rig (2 DAW)</button>
+    </div>
+
+    <div class="log" id="log-list"></div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let balance = parseFloat(localStorage.getItem('dawBalance') || 0);
+        let power = parseFloat(localStorage.getItem('dawPower') || 15);
+        let logs = JSON.parse(localStorage.getItem('dawLogs') || '[]');
+
+        function save() {
+            localStorage.setItem('dawBalance', balance);
+            localStorage.setItem('dawPower', power);
+            localStorage.setItem('dawLogs', JSON.stringify(logs));
+        }
+
+        function updateUI() {
+            document.getElementById('balance').textContent = balance.toFixed(4) + " DAW";
+            document.getElementById('power').textContent = `Mining Power: ${Math.floor(power)} H/s`;
+            document.getElementById('log-list').innerHTML = logs.slice(-7).reverse().map(l => `<div>${l}</div>`).join('');
+        }
+
+        // Passive Self Mining
+        setInterval(() => {
+            balance += power / 22000;
+            updateUI();
+            save();
+        }, 2000);
+
+        // Manual mining
+        document.getElementById('mine-btn').addEventListener('click', () => {
+            balance += power / 700;
+            logs.push(new Date().toLocaleTimeString() + " → Manual Mine");
+            updateUI();
+            save();
+        });
+
+        function claimReward() {
+            const reward = 0.012 + (power * 0.0012);
+            balance += reward;
+            logs.push(new Date().toLocaleTimeString() + ` → Claimed ${reward.toFixed(4)}`);
+            updateUI();
+            save();
+            tg.showPopup({message: "✅ Reward Claimed!"});
+        }
+
+        function buyUpgrade() {
+            if (balance >= 2) {
+                balance -= 2;
+                power += 45;
+                logs.push(new Date().toLocaleTimeString() + " → Rig Upgraded +45 H/s");
+                updateUI();
+                save();
+                tg.showPopup({message: "Upgrade Success! 🔥"});
+            } else {
+                tg.showPopup({message: "Not enough DAW"});
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
