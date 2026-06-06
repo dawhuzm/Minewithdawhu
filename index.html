@@ -25,12 +25,12 @@
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* Purple Sparkle Mining Area */
+        /* Purple Glow Area */
         .mining-area {
             margin: 70px 20px 100px;
             background: linear-gradient(145deg, #4a0088, #2a0055, #1a0033);
             border-radius: 28px;
-            padding: 25px 15px 30px;
+            padding: 25px 15px 35px;
             box-shadow: 0 0 40px rgba(168, 85, 247, 0.8),
                         0 0 70px rgba(236, 72, 153, 0.4),
                         inset 0 0 60px rgba(168, 85, 247, 0.5);
@@ -44,7 +44,7 @@
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
             animation: pulse 8s infinite;
             pointer-events: none;
         }
@@ -63,81 +63,32 @@
             position: relative;
         }
 
-        /* Mining Scene Container */
-        .miner-scene {
-            position: relative;
-            height: 180px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            margin: 10px 0;
+        .tap-coin {
+            font-size: 160px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            filter: drop-shadow(0 0 30px #ffd700);
+            user-select: none;
         }
 
-        .penguin {
-            font-size: 120px;
-            position: relative;
-            z-index: 2;
-            animation: penguinMine 1.8s infinite;
-        }
-
-        .pickaxe {
-            font-size: 45px;
-            position: absolute;
-            left: 52%;
-            bottom: 75px;
-            transform-origin: center bottom;
-            animation: swingPick 1.8s infinite;
-            z-index: 2;
-        }
-
-        .rock {
-            font-size: 55px;
-            position: absolute;
-            left: 38%;
-            bottom: 25px;
-            z-index: 1;
-        }
-
-        .mined-coin {
-            position: absolute;
-            font-size: 28px;
-            color: #ffd700;
-            left: 45%;
-            bottom: 55px;
-            animation: coinPop 2.2s infinite;
-            z-index: 2;
-            text-shadow: 0 0 15px gold;
-        }
-
-        @keyframes penguinMine {
-            0%, 100% { transform: rotate(-8deg) translateX(-8px); }
-            50% { transform: rotate(8deg) translateX(6px); }
-        }
-
-        @keyframes swingPick {
-            0%, 100% { transform: rotate(-35deg); }
-            50% { transform: rotate(25deg); }
-        }
-
-        @keyframes coinPop {
-            0%, 100% { transform: scale(0.6) translateY(0); opacity: 0.4; }
-            50% { transform: scale(1.2) translateY(-25px); opacity: 1; }
+        .tap-coin:active {
+            transform: scale(0.85);
         }
 
         .coin {
             position: absolute;
-            font-size: 34px;
+            font-size: 38px;
             color: #ffd700;
-            text-shadow: 0 0 15px gold, 0 0 25px #fff;
-            animation: floatCoin 4.5s linear infinite;
+            text-shadow: 0 0 20px gold, 0 0 35px #fff;
+            animation: floatCoin 3.8s linear forwards;
             user-select: none;
             z-index: 1;
+            pointer-events: none;
         }
 
         @keyframes floatCoin {
-            0% { transform: translateY(120px) scale(0.5) rotate(0deg); opacity: 0; }
-            15% { opacity: 1; }
-            100% { transform: translateY(-320px) scale(1.2) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(80px) scale(0.6) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-280px) scale(1.3) rotate(360deg); opacity: 0; }
         }
 
         .bottom-nav {
@@ -177,19 +128,16 @@
         </div>
     </div>
 
-    <!-- Mining Area -->
+    <!-- Tap to Earn Area -->
     <div class="mining-area" id="miningArea">
         <h2>🪙 Active Self Miner 🪙</h2>
         
-        <div class="miner-scene">
-            <div class="penguin">🐧</div>
-            <div class="pickaxe">⛏️</div>
-            <div class="rock">🪨</div>
-            <div class="mined-coin">🪙</div>
+        <div style="margin: 20px 0;">
+            <div id="mainCoin" class="tap-coin">🪙</div>
         </div>
 
         <p style="color:#ffd700; font-size:19px; margin:10px 0; text-shadow: 0 0 10px #a855f7;">
-            Mining $DHU Coins...
+            Tap the coin to earn $DHU
         </p>
     </div>
 
@@ -228,32 +176,44 @@
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        // Floating coins
-        function createFloatingCoin() {
+        // Tap to Earn
+        const mainCoin = document.getElementById('mainCoin');
+        mainCoin.addEventListener('click', (e) => {
+            // Add balance
+            balance += 0.25;
+            updateUI();
+            localStorage.setItem('dawBalance', balance);
+
+            // Create burst of coins
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => createFloatingCoin(e), i * 30);
+            }
+        });
+
+        function createFloatingCoin(clickEvent) {
             const area = document.getElementById('miningArea');
             const coin = document.createElement('div');
             coin.className = 'coin';
             coin.textContent = '🪙';
             
-            const left = Math.random() * 78 + 11;
-            coin.style.left = left + '%';
-            coin.style.bottom = '90px';
-            coin.style.animationDuration = (3.8 + Math.random() * 3) + 's';
+            const rect = area.getBoundingClientRect();
+            const x = Math.random() * 160 + 60;
+            
+            coin.style.left = x + 'px';
+            coin.style.bottom = '120px';
+            coin.style.animationDuration = (2.8 + Math.random() * 1.5) + 's';
             
             area.appendChild(coin);
-            setTimeout(() => coin.remove(), 8500);
+            
+            setTimeout(() => coin.remove(), 5000);
         }
 
+        // Passive small income
         setInterval(() => {
-            if (Math.random() > 0.22) createFloatingCoin();
-        }, 260);
-
-        // Passive mining
-        setInterval(() => {
-            balance += 0.02;
+            balance += 0.008;
             updateUI();
             localStorage.setItem('dawBalance', balance);
-        }, 5000);
+        }, 7000);
 
         updateUI();
     </script>
