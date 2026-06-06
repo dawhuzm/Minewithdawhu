@@ -24,6 +24,41 @@
         .profile-card {
             display: flex; align-items: center; gap: 10px;
         }
+        .mining-area {
+            margin: 70px 20px 100px;
+            background: linear-gradient(145deg, #2a0055, #4a0088);
+            border: 4px solid #ff8800;
+            border-radius: 24px;
+            padding: 20px 15px;
+            box-shadow: 0 0 30px rgba(255, 136, 0, 0.7),
+                        inset 0 0 40px rgba(138, 43, 226, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .mining-area h2 {
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            margin-bottom: 15px;
+        }
+        .penguin {
+            font-size: 110px;
+            margin: 10px 0;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 15px #ffd700);
+        }
+        .coin {
+            position: absolute;
+            font-size: 32px;
+            color: #ffd700;
+            text-shadow: 0 0 12px gold;
+            animation: floatCoin 4s linear infinite;
+            user-select: none;
+        }
+        @keyframes floatCoin {
+            0% { transform: translateY(100px) scale(0.6); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-280px) scale(1.1); opacity: 0; }
+        }
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             display: flex; justify-content: space-around; 
@@ -47,27 +82,25 @@
 <body>
     <!-- Top Bar -->
     <div class="top-bar">
-        <!-- Profile -->
         <div class="profile-card">
             <div style="width:48px;height:48px;background:linear-gradient(#ff00ff,#00ffff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid #fff;">👤</div>
             <div><strong id="username">Player</strong></div>
         </div>
 
-        <!-- Balance - Updated to stay in one line -->
         <div class="top-card" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             <strong id="balance">0.00</strong> Dhu
         </div>
 
-        <!-- Wallet -->
         <div class="top-card">
             💼 Wallet
         </div>
     </div>
 
-    <!-- Empty space for future mining area -->
-    <div style="margin-top: 80px; padding: 20px;">
-        <h2 style="color:#00ffff;">⛏️ Dawhu Self Miner</h2>
-        <p style="color:#aaa; margin-top: 30px;">Mining system coming soon...</p>
+    <!-- Mining Area -->
+    <div class="mining-area" id="miningArea">
+        <h2>🪙 Active Self Miner 🪙</h2>
+        <div class="penguin">🐧</div>
+        <p style="color:#ffd700; font-size:18px; margin:10px 0;">Mining DHU Coins...</p>
     </div>
 
     <!-- Bottom Navigation -->
@@ -97,7 +130,6 @@
         let balance = parseFloat(localStorage.getItem('dawBalance') || 12.45);
 
         function updateUI() {
-            // Show only 2 decimal places
             document.getElementById('balance').textContent = balance.toFixed(2);
             document.getElementById('username').textContent = tg.initDataUnsafe?.user?.first_name || "Player";
         }
@@ -106,12 +138,34 @@
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        // Passive small increase
+        // Floating coins animation
+        function createFloatingCoin() {
+            const area = document.getElementById('miningArea');
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.textContent = '🪙';
+            
+            const left = Math.random() * 70 + 15;
+            coin.style.left = left + '%';
+            coin.style.bottom = '60px';
+            coin.style.animationDuration = (3 + Math.random() * 3) + 's';
+            
+            area.appendChild(coin);
+            
+            setTimeout(() => coin.remove(), 6000);
+        }
+
+        // Auto floating coins
         setInterval(() => {
-            balance += 0.01;
+            if (Math.random() > 0.3) createFloatingCoin();
+        }, 400);
+
+        // Passive mining
+        setInterval(() => {
+            balance += 0.015;
             updateUI();
             localStorage.setItem('dawBalance', balance);
-        }, 8000);
+        }, 6000);
 
         updateUI();
     </script>
