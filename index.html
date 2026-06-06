@@ -136,7 +136,6 @@
         <h2>Mining $Dawhu ⛏️</h2>
         
         <div class="progress-container">
-            <!-- Progress Ring -->
             <svg class="progress-ring" width="220" height="220">
                 <circle class="progress-ring__bg" cx="110" cy="110" r="98" fill="none" stroke="#0a0022" stroke-width="20"/>
                 <circle id="progressCircle" class="progress-ring__circle" cx="110" cy="110" r="98" 
@@ -144,7 +143,6 @@
                         stroke-dasharray="615" stroke-dashoffset="615" stroke-linecap="round"/>
             </svg>
             
-            <!-- Blue Coin with $DHU -->
             <div class="center-coin" id="centerCoin">$DHU</div>
         </div>
 
@@ -176,6 +174,7 @@
         const progressCircle = document.getElementById('progressCircle');
 
         const TOTAL_MINING_TIME = 5000; // 5 seconds
+        const TOTAL_REWARD = 2.25;      // Reward per session
         const circumference = 615;
 
         function updateUI() {
@@ -205,21 +204,24 @@
 
             miningInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
-                const progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
+                let progress = (elapsed / TOTAL_MINING_TIME) * 100;
                 
-                minedAmount = (elapsed / TOTAL_MINING_TIME) * 2.25; // Total 2.25 DHU per session
-                
-                updateProgress(progress);
-
                 if (progress >= 100) {
+                    progress = 100;
                     finishMining();
+                } else {
+                    minedAmount = (progress / 100) * TOTAL_REWARD;
+                    updateProgress(progress);
                 }
-            }, 100); // Smooth update
+            }, 50); // Very smooth update
         }
 
         function finishMining() {
             clearInterval(miningInterval);
             isMining = false;
+            
+            // Force final reward amount
+            minedAmount = TOTAL_REWARD;
 
             statusEl.textContent = `Mined: ${minedAmount.toFixed(2)} $DHU`;
             actionBtn.textContent = "CLAIM REWARD";
@@ -229,13 +231,14 @@
         actionBtn.addEventListener('click', () => {
             if (!isMining) {
                 startMining();
-            } else if (actionBtn.textContent === "CLAIM REWARD") {
-                // Add mined amount to main balance
+            } 
+            else if (actionBtn.textContent === "CLAIM REWARD") {
+                // === FIXED: Add to balance ===
                 balance += minedAmount;
                 updateUI();
                 localStorage.setItem('dawBalance', balance);
 
-                // Reset mining area
+                // Reset everything
                 minedAmount = 0;
                 updateProgress(0);
                 statusEl.textContent = "Tap button to start mining";
