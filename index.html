@@ -61,16 +61,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 38px;
             font-weight: bold;
             color: white;
             box-shadow: 
-                0 0 30px rgba(59, 140, 255, 0.9),
+                0 0 40px #00ff88,
+                0 0 70px #00ff88,
                 inset 0 0 30px rgba(255,255,255,0.5),
                 0 8px 25px rgba(0,0,0,0.7);
             border: 14px solid #0a0022;
             z-index: 10;
-            text-shadow: 0 0 15px rgba(255,255,255,0.95);
+            text-shadow: 0 0 20px rgba(255,255,255,0.95);
             letter-spacing: 1px;
             pointer-events: none;
         }
@@ -136,6 +137,7 @@
         <h2>Mining $Dawhu ⛏️</h2>
         
         <div class="progress-container">
+            <!-- Progress Ring -->
             <svg class="progress-ring" width="220" height="220">
                 <circle class="progress-ring__bg" cx="110" cy="110" r="98" fill="none" stroke="#0a0022" stroke-width="20"/>
                 <circle id="progressCircle" class="progress-ring__circle" cx="110" cy="110" r="98" 
@@ -143,6 +145,7 @@
                         stroke-dasharray="615" stroke-dashoffset="615" stroke-linecap="round"/>
             </svg>
             
+            <!-- Blue Coin -->
             <div class="center-coin" id="centerCoin">$DHU</div>
         </div>
 
@@ -174,7 +177,7 @@
         const progressCircle = document.getElementById('progressCircle');
 
         const TOTAL_MINING_TIME = 5000; // 5 seconds
-        const TOTAL_REWARD = 2.25;      // Reward per session
+        const TOTAL_REWARD = 2.25;
         const circumference = 615;
 
         function updateUI() {
@@ -198,29 +201,27 @@
             startTime = Date.now();
             updateProgress(0);
 
-            statusEl.textContent = "Mining in progress... (5 Seconds)";
+            statusEl.textContent = "Mining in progress...";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
 
             miningInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 let progress = (elapsed / TOTAL_MINING_TIME) * 100;
-                
+
                 if (progress >= 100) {
-                    progress = 100;
                     finishMining();
                 } else {
                     minedAmount = (progress / 100) * TOTAL_REWARD;
                     updateProgress(progress);
                 }
-            }, 50); // Very smooth update
+            }, 50);
         }
 
         function finishMining() {
             clearInterval(miningInterval);
             isMining = false;
             
-            // Force final reward amount
             minedAmount = TOTAL_REWARD;
 
             statusEl.textContent = `Mined: ${minedAmount.toFixed(2)} $DHU`;
@@ -233,12 +234,12 @@
                 startMining();
             } 
             else if (actionBtn.textContent === "CLAIM REWARD") {
-                // === FIXED: Add to balance ===
+                // Add mined amount to top balance
                 balance += minedAmount;
                 updateUI();
                 localStorage.setItem('dawBalance', balance);
 
-                // Reset everything
+                // Reset
                 minedAmount = 0;
                 updateProgress(0);
                 statusEl.textContent = "Tap button to start mining";
