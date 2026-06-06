@@ -39,8 +39,8 @@
 
         .coin-container {
             position: relative;
-            width: 190px;
-            height: 190px;
+            width: 200px;
+            height: 200px;
             margin: 20px auto;
         }
 
@@ -56,30 +56,34 @@
             font-size: 42px;
             font-weight: bold;
             color: white;
-            text-shadow: 0 0 15px rgba(255,255,255,0.9);
-            box-shadow: 0 0 40px #3b8dff,
-                        inset 0 0 30px rgba(255,255,255,0.4);
+            text-shadow: 0 0 20px rgba(255,255,255,0.95);
+            box-shadow: 0 0 45px #3b8dff,
+                        inset 0 0 35px rgba(255,255,255,0.5);
             cursor: pointer;
             user-select: none;
             transition: all 0.1s;
-            border: 8px solid #0a0022;
+            border: 10px solid #0a0022;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
         }
 
         .tap-coin:active {
             transform: scale(0.92);
         }
 
-        /* Circular Progress */
+        /* Circular Progress Ring - Perfectly around the coin */
         .progress-ring {
             position: absolute;
             top: 0; left: 0;
-            width: 190px;
-            height: 190px;
+            width: 200px;
+            height: 200px;
             transform: rotate(-90deg);
         }
 
         .progress-ring__circle {
-            transition: stroke-dashoffset 0.6s linear;
+            transition: stroke-dashoffset 0.8s linear;
         }
 
         .status {
@@ -88,7 +92,7 @@
             min-height: 28px;
         }
 
-        /* Dynamic Green Button */
+        /* Dynamic Button */
         .action-btn {
             background: linear-gradient(#00ff88, #00cc66);
             color: black;
@@ -160,11 +164,11 @@
         
         <div class="coin-container">
             <!-- Progress Ring -->
-            <svg class="progress-ring" width="190" height="190">
-                <circle class="progress-ring__bg" cx="95" cy="95" r="86" fill="none" stroke="#1a0033" stroke-width="16"/>
-                <circle id="progressCircle" class="progress-ring__circle" cx="95" cy="95" r="86" 
-                        fill="none" stroke="#00ccff" stroke-width="16"
-                        stroke-dasharray="540" stroke-dashoffset="540" stroke-linecap="round"/>
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring__bg" cx="100" cy="100" r="92" fill="none" stroke="#1a0033" stroke-width="18"/>
+                <circle id="progressCircle" class="progress-ring__circle" cx="100" cy="100" r="92" 
+                        fill="none" stroke="#00ccff" stroke-width="18"
+                        stroke-dasharray="577" stroke-dashoffset="577" stroke-linecap="round"/>
             </svg>
             
             <div id="mainCoin" class="tap-coin">$DHU</div>
@@ -197,7 +201,7 @@
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
 
-        const circumference = 540;
+        const circumference = 577;
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2);
@@ -218,7 +222,7 @@
             coin.className = 'coin';
             coin.textContent = '🪙';
             coin.style.left = (Math.random() * 70 + 15) + '%';
-            coin.style.bottom = '110px';
+            coin.style.bottom = '120px';
             area.appendChild(coin);
             setTimeout(() => coin.remove(), 4000);
         }
@@ -235,18 +239,18 @@
             actionBtn.classList.add('mining');
 
             mainCoin.style.pointerEvents = "none";
-            mainCoin.style.opacity = "0.75";
+            mainCoin.style.opacity = "0.8";
 
             let progress = 0;
 
             miningInterval = setInterval(() => {
                 minedAmount += 0.45;
-                progress += 100 / 30;   // Demo: 30 seconds total
+                progress += 100 / 30;   // Demo: 30 seconds
                 updateProgress(Math.min(progress, 100));
                 createFloatingCoin();
             }, 800);
 
-            setTimeout(() => finishMining(), 30000); // Change to 18000000 for real 5 hours
+            setTimeout(() => finishMining(), 30000); // Change to 18000000 for 5 hours
         }
 
         function finishMining() {
