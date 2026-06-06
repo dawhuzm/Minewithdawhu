@@ -25,9 +25,8 @@
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* Purple Glow Area */
         .mining-area {
-            margin: 70px 20px 100px;
+            margin: 60px 20px 100px;
             background: linear-gradient(145deg, #4a0088, #2a0055, #1a0033);
             border-radius: 28px;
             padding: 25px 15px 35px;
@@ -70,24 +69,40 @@
             filter: drop-shadow(0 0 30px #ffd700);
             user-select: none;
         }
+        .tap-coin:active { transform: scale(0.85); }
 
-        .tap-coin:active {
-            transform: scale(0.85);
+        .status {
+            font-size: 18px;
+            margin: 15px 0;
+            min-height: 28px;
+        }
+
+        .claim-btn {
+            background: linear-gradient(#00ff00, #00cc00);
+            color: black;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            margin-top: 15px;
+            cursor: pointer;
+            box-shadow: 0 0 20px #00ff00;
+            display: none;
         }
 
         .coin {
             position: absolute;
             font-size: 38px;
             color: #ffd700;
-            text-shadow: 0 0 20px gold, 0 0 35px #fff;
-            animation: floatCoin 3.8s linear forwards;
-            user-select: none;
+            text-shadow: 0 0 20px gold;
+            animation: floatCoin 3.5s linear forwards;
             z-index: 1;
             pointer-events: none;
         }
 
         @keyframes floatCoin {
-            0% { transform: translateY(80px) scale(0.6) rotate(0deg); opacity: 1; }
+            0% { transform: translateY(100px) scale(0.6); opacity: 1; }
             100% { transform: translateY(-280px) scale(1.3) rotate(360deg); opacity: 0; }
         }
 
@@ -104,11 +119,6 @@
             box-shadow: 0 0 15px rgba(255, 136, 0, 0.6);
             cursor: pointer;
         }
-        .nav-card:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 25px rgba(255, 136, 0, 0.9);
-        }
-        .icon { font-size: 1.8em; margin-bottom: 4px; display: block; }
     </style>
 </head>
 <body>
@@ -119,16 +129,14 @@
             <div><strong id="username">Player</strong></div>
         </div>
 
-        <div class="top-card" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <div class="top-card">
             <strong id="balance">0.00</strong> Dhu
         </div>
 
-        <div class="top-card">
-            💼 Wallet
-        </div>
+        <div class="top-card">💼 Wallet</div>
     </div>
 
-    <!-- Tap to Earn Area -->
+    <!-- Mining Area -->
     <div class="mining-area" id="miningArea">
         <h2>🪙 Active Self Miner 🪙</h2>
         
@@ -136,29 +144,17 @@
             <div id="mainCoin" class="tap-coin">🪙</div>
         </div>
 
-        <p style="color:#ffd700; font-size:19px; margin:10px 0; text-shadow: 0 0 10px #a855f7;">
-            Tap the coin to earn $DHU
-        </p>
+        <div class="status" id="status">Tap the coin to start mining</div>
+        
+        <button id="claimBtn" class="claim-btn">CLAIM REWARDS</button>
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <div class="nav-card" onclick="showSection('home')">
-            <span class="icon">🏠</span>
-            HOME
-        </div>
-        <div class="nav-card" onclick="showSection('tasks')">
-            <span class="icon">🧰</span>
-            TASKS
-        </div>
-        <div class="nav-card" onclick="showSection('invite')">
-            <span class="icon">🫂</span>
-            INVITE
-        </div>
-        <div class="nav-card" onclick="showSection('profile')">
-            <span class="icon">🪪</span>
-            PROFILE
-        </div>
+        <div class="nav-card" onclick="showSection('home')"><span class="icon">🏠</span>HOME</div>
+        <div class="nav-card" onclick="showSection('tasks')"><span class="icon">🧰</span>TASKS</div>
+        <div class="nav-card" onclick="showSection('invite')"><span class="icon">🫂</span>INVITE</div>
+        <div class="nav-card" onclick="showSection('profile')"><span class="icon">🪪</span>PROFILE</div>
     </div>
 
     <script>
@@ -166,55 +162,91 @@
         tg.expand();
 
         let balance = parseFloat(localStorage.getItem('dawBalance') || 12.45);
+        let isMining = false;
+        let minedAmount = 0;
+        let miningInterval = null;
+        let timerInterval = null;
+
+        const mainCoin = document.getElementById('mainCoin');
+        const statusEl = document.getElementById('status');
+        const claimBtn = document.getElementById('claimBtn');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2);
-            document.getElementById('username').textContent = tg.initDataUnsafe?.user?.first_name || "Player";
         }
 
         function showSection(section) {
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        // Tap to Earn
-        const mainCoin = document.getElementById('mainCoin');
-        mainCoin.addEventListener('click', (e) => {
-            // Add balance
-            balance += 0.25;
-            updateUI();
-            localStorage.setItem('dawBalance', balance);
-
-            // Create burst of coins
-            for (let i = 0; i < 8; i++) {
-                setTimeout(() => createFloatingCoin(e), i * 30);
-            }
-        });
-
-        function createFloatingCoin(clickEvent) {
+        // Create floating coin effect
+        function createFloatingCoin() {
             const area = document.getElementById('miningArea');
             const coin = document.createElement('div');
             coin.className = 'coin';
             coin.textContent = '🪙';
-            
-            const rect = area.getBoundingClientRect();
-            const x = Math.random() * 160 + 60;
-            
-            coin.style.left = x + 'px';
-            coin.style.bottom = '120px';
-            coin.style.animationDuration = (2.8 + Math.random() * 1.5) + 's';
-            
+            coin.style.left = (Math.random() * 70 + 15) + '%';
+            coin.style.bottom = '100px';
             area.appendChild(coin);
-            
-            setTimeout(() => coin.remove(), 5000);
+            setTimeout(() => coin.remove(), 4000);
         }
 
-        // Passive small income
-        setInterval(() => {
-            balance += 0.008;
+        // Start Mining Session (5 hours in real, 30 seconds for demo)
+        function startMining() {
+            if (isMining) return;
+            
+            isMining = true;
+            minedAmount = 0;
+            claimBtn.style.display = 'none';
+            
+            statusEl.textContent = "Mining in progress... ⛏️";
+            mainCoin.style.pointerEvents = "none";
+            mainCoin.style.opacity = "0.7";
+
+            // Mining rate: 0.5 DHU per second (demo) → change to lower for real 5 hours
+            miningInterval = setInterval(() => {
+                minedAmount += 0.5;   // Increase this for slower mining
+                createFloatingCoin();
+            }, 800);
+
+            // Demo: 30 seconds (Change to 5*60*60*1000 for real 5 hours)
+            setTimeout(() => {
+                if (isMining) finishMining();
+            }, 30000); // ← Change to 18000000 (5 hours) for production
+        }
+
+        function finishMining() {
+            clearInterval(miningInterval);
+            isMining = false;
+            mainCoin.style.pointerEvents = "auto";
+            mainCoin.style.opacity = "1";
+            
+            statusEl.textContent = `Mined: ${minedAmount.toFixed(2)} $DHU`;
+            claimBtn.style.display = 'block';
+        }
+
+        // Claim Rewards
+        claimBtn.addEventListener('click', () => {
+            balance += minedAmount;
             updateUI();
             localStorage.setItem('dawBalance', balance);
-        }, 7000);
 
+            // Reset for next session
+            minedAmount = 0;
+            claimBtn.style.display = 'none';
+            statusEl.textContent = "Tap the coin to start mining";
+        });
+
+        // Tap Coin
+        mainCoin.addEventListener('click', () => {
+            if (!isMining) {
+                startMining();
+            } else {
+                createFloatingCoin(); // Extra visual feedback while mining
+            }
+        });
+
+        // Initial UI update
         updateUI();
     </script>
 </body>
