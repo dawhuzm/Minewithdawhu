@@ -159,14 +159,15 @@
         let isMining = false;
         let minedAmount = 0;
         let miningInterval = null;
+        let startTime = null;
 
         const statusEl = document.getElementById('status');
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
         const balanceEl = document.getElementById('balance');
 
-        const TOTAL_MINING_TIME = 5000;
-        const TOTAL_REWARD = 2.25;
+        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 Hours in milliseconds
+        const TOTAL_REWARD = 1000;                    // 1000 $DHU
         const circumference = 560;
 
         function updateUI() {
@@ -178,6 +179,12 @@
             progressCircle.style.strokeDashoffset = offset;
         }
 
+        function formatTimeRemaining(ms) {
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            return `${hours}h ${minutes}m`;
+        }
+
         function showSection(section) {
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
@@ -187,20 +194,27 @@
             
             isMining = true;
             minedAmount = 0;
-            const startTime = Date.now();
+            startTime = Date.now();
 
             updateProgress(0);
-            statusEl.textContent = "Mining in progress...";
+            statusEl.textContent = "Mining in progress... (5 hours)";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
 
             miningInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 let progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
+
                 updateProgress(progress);
 
-                if (progress >= 100) finishMining();
-            }, 50);
+                if (progress >= 100) {
+                    finishMining();
+                } else {
+                    // Optional: Show remaining time
+                    const remaining = TOTAL_MINING_TIME - elapsed;
+                    statusEl.textContent = `Mining... ${formatTimeRemaining(remaining)} left`;
+                }
+            }, 1000); // Update every second
         }
 
         function finishMining() {
@@ -208,8 +222,8 @@
             isMining = false;
             minedAmount = TOTAL_REWARD;
 
-            statusEl.textContent = `Mined: ${minedAmount.toFixed(2)} $DHU`;
-            actionBtn.textContent = "CLAIM REWARD";
+            statusEl.textContent = `✅ Mining Complete! +${TOTAL_REWARD} $DHU`;
+            actionBtn.textContent = "CLAIM 1000 $DHU";
             actionBtn.classList.remove('mining');
         }
 
@@ -230,7 +244,7 @@
         actionBtn.addEventListener('click', () => {
             if (!isMining && actionBtn.textContent === "START MINING") {
                 startMining();
-            } else if (actionBtn.textContent === "CLAIM REWARD") {
+            } else if (actionBtn.textContent.includes("CLAIM")) {
                 claimReward();
             }
         });
