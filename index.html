@@ -175,7 +175,7 @@
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
 
-        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+        const TOTAL_MINING_TIME = 5000; // 5 seconds
         const circumference = 615;
 
         function updateUI() {
@@ -199,7 +199,7 @@
             startTime = Date.now();
             updateProgress(0);
 
-            statusEl.textContent = "Mining in progress... (5 Hours)";
+            statusEl.textContent = "Mining in progress... (5 Seconds)";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
 
@@ -207,13 +207,14 @@
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
                 
-                minedAmount = (elapsed / TOTAL_MINING_TIME) * 135; // Total ~135 DHU in 5 hours
+                minedAmount = (elapsed / TOTAL_MINING_TIME) * 2.25; // Total 2.25 DHU per session
+                
                 updateProgress(progress);
 
                 if (progress >= 100) {
                     finishMining();
                 }
-            }, 1000); // Update every second
+            }, 100); // Smooth update
         }
 
         function finishMining() {
@@ -229,10 +230,12 @@
             if (!isMining) {
                 startMining();
             } else if (actionBtn.textContent === "CLAIM REWARD") {
+                // Add mined amount to main balance
                 balance += minedAmount;
                 updateUI();
                 localStorage.setItem('dawBalance', balance);
 
+                // Reset mining area
                 minedAmount = 0;
                 updateProgress(0);
                 statusEl.textContent = "Tap button to start mining";
@@ -244,4 +247,4 @@
         updateUI();
     </script>
 </body>
-    </html>
+</html>
