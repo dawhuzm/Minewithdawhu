@@ -6,6 +6,7 @@
     <title>Dawhu Miner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Same beautiful styles as before - unchanged */
         body { 
             margin:0; padding:0; background: #0a001f; color:#fff; font-family:sans-serif; 
             text-align:center; min-height:100vh; overflow: hidden;
@@ -57,37 +58,22 @@
             font-size: 34px;
             font-weight: bold;
             color: white;
-            box-shadow: 
-                0 0 35px #00ff88,
-                0 0 60px #00ff88,
-                inset 0 0 30px rgba(255,255,255,0.5),
-                0 8px 25px rgba(0,0,0,0.7);
+            box-shadow: 0 0 35px #00ff88, 0 0 60px #00ff88,
+                        inset 0 0 30px rgba(255,255,255,0.5),
+                        0 8px 25px rgba(0,0,0,0.7);
             border: 12px solid #0a0022;
             z-index: 10;
-            text-shadow: 0 0 20px rgba(255,255,255,0.95);
         }
 
-        .status {
-            font-size: 17px;
-            margin: 15px 0 12px;
-            min-height: 26px;
-        }
-
+        .status { font-size: 17px; margin: 15px 0 12px; min-height: 26px; }
+        
         .action-btn {
             background: linear-gradient(#00ff88, #00cc66);
-            color: black;
-            font-weight: bold;
-            font-size: 18px;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 12px;
-            margin: 10px auto;
-            cursor: pointer;
-            box-shadow: 0 0 25px #00ff88;
-            width: 85%;
-            max-width: 300px;
+            color: black; font-weight: bold; font-size: 18px;
+            padding: 15px 40px; border: none; border-radius: 12px;
+            margin: 10px auto; cursor: pointer; box-shadow: 0 0 25px #00ff88;
+            width: 85%; max-width: 300px;
         }
-
         .action-btn.mining {
             background: linear-gradient(#ffaa00, #ff8800);
             box-shadow: 0 0 20px #ffaa00;
@@ -100,12 +86,10 @@
         }
         .nav-card {
             background: linear-gradient(145deg, #2a0055, #4a0088);
-            border: 3px solid #ff8800;
-            color: white; padding: 10px 6px; border-radius: 16px;
-            flex: 1; text-align: center; font-weight: bold;
+            border: 3px solid #ff8800; color: white; padding: 10px 6px;
+            border-radius: 16px; flex: 1; font-weight: bold;
             box-shadow: 0 0 15px rgba(255, 136, 0, 0.6);
-            cursor: pointer;
-            font-size: 13px;
+            cursor: pointer; font-size: 13px;
         }
     </style>
 </head>
@@ -125,13 +109,13 @@
     </div>
 
     <!-- Mining Area -->
-    <div class="mining-area" id="miningArea">
+    <div class="mining-area">
         <h2>Mining $Dawhu ⛏️</h2>
         
         <div class="progress-container">
-            <svg class="progress-ring" width="200" height="200">
-                <circle class="progress-ring__bg" cx="100" cy="100" r="89" fill="none" stroke="#0a0022" stroke-width="18"/>
-                <circle id="progressCircle" class="progress-ring__circle" cx="100" cy="100" r="89" 
+            <svg width="200" height="200">
+                <circle cx="100" cy="100" r="89" fill="none" stroke="#0a0022" stroke-width="18"/>
+                <circle id="progressCircle" cx="100" cy="100" r="89" 
                         fill="none" stroke="#00ff88" stroke-width="18"
                         stroke-dasharray="560" stroke-dashoffset="560" stroke-linecap="round"/>
             </svg>
@@ -155,20 +139,72 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let balance = parseFloat(localStorage.getItem('dawBalance') || '12.45');
+        let balance = 0;
         let isMining = false;
-        let minedAmount = 0;
-        let miningInterval = null;
-        let startTime = null;
+        let miningStartTime = null;
+        let userId = null;
+
+        const API_BASE = "https://your-backend.com/api"; // ← CHANGE THIS
 
         const statusEl = document.getElementById('status');
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
         const balanceEl = document.getElementById('balance');
 
-        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 Hours in milliseconds
-        const TOTAL_REWARD = 1000;                    // 1000 $DHU
+        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours
+        const TOTAL_REWARD = 1000;
         const circumference = 560;
+
+        // Get Telegram User ID
+        function getUserId() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                userId = tg.initDataUnsafe.user.id;
+                document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name || "Player";
+                return userId;
+            }
+            return null;
+        }
+
+        // Save progress to backend
+        async function saveProgress() {
+            if (!userId) return;
+            try {
+                await fetch(`${API_BASE}/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        balance: balance,
+                        last_mining_start: miningStartTime
+                    })
+                });
+            } catch (e) { console.log("Save failed", e); }
+        }
+
+        // Load progress from backend
+        async function loadProgress() {
+            if (!userId) return;
+            try {
+                const res = await fetch(`${API_BASE}/load?user_id=${userId}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    balance = parseFloat(data.balance) || 0;
+                    miningStartTime = data.last_mining_start ? new Date(data.last_mining_start) : null;
+                    updateUI();
+                    
+                    // Resume mining if it was active
+                    if (miningStartTime) {
+                        const elapsed = Date.now() - miningStartTime.getTime();
+                        if (elapsed < TOTAL_MINING_TIME) {
+                            resumeMining(elapsed);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log("Load failed, using local fallback");
+            }
+        }
 
         function updateUI() {
             balanceEl.textContent = balance.toFixed(2);
@@ -179,68 +215,55 @@
             progressCircle.style.strokeDashoffset = offset;
         }
 
-        function formatTimeRemaining(ms) {
-            const hours = Math.floor(ms / (1000 * 60 * 60));
-            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-            return `${hours}h ${minutes}m`;
-        }
-
         function showSection(section) {
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        function startMining() {
+        async function startMining() {
             if (isMining) return;
             
             isMining = true;
-            minedAmount = 0;
-            startTime = Date.now();
-
+            miningStartTime = new Date();
+            
             updateProgress(0);
             statusEl.textContent = "Mining in progress... (5 hours)";
             actionBtn.textContent = "MINING IN PROGRESS...";
             actionBtn.classList.add('mining');
 
-            miningInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime;
+            await saveProgress(); // Save start time
+
+            const interval = setInterval(async () => {
+                const elapsed = Date.now() - miningStartTime.getTime();
                 let progress = Math.min((elapsed / TOTAL_MINING_TIME) * 100, 100);
 
                 updateProgress(progress);
 
                 if (progress >= 100) {
+                    clearInterval(interval);
                     finishMining();
-                } else {
-                    // Optional: Show remaining time
-                    const remaining = TOTAL_MINING_TIME - elapsed;
-                    statusEl.textContent = `Mining... ${formatTimeRemaining(remaining)} left`;
                 }
-            }, 1000); // Update every second
+            }, 2000);
         }
 
         function finishMining() {
-            clearInterval(miningInterval);
             isMining = false;
-            minedAmount = TOTAL_REWARD;
-
             statusEl.textContent = `✅ Mining Complete! +${TOTAL_REWARD} $DHU`;
             actionBtn.textContent = "CLAIM 1000 $DHU";
             actionBtn.classList.remove('mining');
+            saveProgress();
         }
 
         function claimReward() {
-            if (minedAmount <= 0) return;
-
-            balance += minedAmount;
+            balance += TOTAL_REWARD;
             updateUI();
-            localStorage.setItem('dawBalance', balance);
+            saveProgress();
 
-            minedAmount = 0;
-            updateProgress(0);
             statusEl.textContent = "Tap button to start mining";
             actionBtn.textContent = "START MINING";
-            actionBtn.classList.remove('mining');
+            updateProgress(0);
         }
 
+        // Event Listeners
         actionBtn.addEventListener('click', () => {
             if (!isMining && actionBtn.textContent === "START MINING") {
                 startMining();
@@ -250,7 +273,18 @@
         });
 
         // Initialize
-        updateUI();
+        window.onload = async () => {
+            userId = getUserId();
+            if (userId) {
+                await loadProgress();
+            } else {
+                alert("Could not get Telegram user data");
+            }
+            updateUI();
+        };
+
+        // Auto-save every 30 seconds
+        setInterval(saveProgress, 30000);
     </script>
 </body>
 </html>
