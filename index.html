@@ -67,7 +67,7 @@
         .status { 
             font-size: 17px; 
             margin: 15px 0 12px; 
-            min-height: 52px;
+            min-height: 56px;
             line-height: 1.4;
         }
         
@@ -98,21 +98,17 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
     <div class="top-bar">
         <div class="profile-card">
             <div style="width:42px;height:42px;background:linear-gradient(#ff00ff,#00ffff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid #fff;">👤</div>
             <div><strong id="username">Player</strong></div>
         </div>
-
         <div class="top-card">
             <strong id="balance">0.00</strong> Dhu
         </div>
-
         <div class="top-card">💼 Wallet</div>
     </div>
 
-    <!-- Mining Area -->
     <div class="mining-area">
         <h2>Mining $Dawhu ⛏️</h2>
         
@@ -123,15 +119,14 @@
                         fill="none" stroke="#00ff88" stroke-width="18"
                         stroke-dasharray="560" stroke-dashoffset="560" stroke-linecap="round"/>
             </svg>
-            <div class="center-coin" id="centerCoin">$DHU</div>
+            <div class="center-coin">$DHU</div>
         </div>
 
-        <div class="status" id="status">Tap to start 5-hour mining</div>
+        <div class="status" id="status">Loading mining status...</div>
         
         <button id="actionBtn" class="action-btn">START MINING</button>
     </div>
 
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="nav-card" onclick="showSection('home')">🏠 HOME</div>
         <div class="nav-card" onclick="showSection('tasks')">🧰 TASKS</div>
@@ -143,56 +138,33 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let balance = 0;
-        let isMining = false;
-        let miningStartTime = null;
         let userId = null;
-        let countdownInterval = null;
+        let balance = 0;
+        let miningStartTime = null;
+        let isMining = false;
 
-        const API_BASE = "https://your-backend.com/api";   // ← CHANGE TO YOUR REAL API
+        const API_BASE = "https://your-backend.com/api"; // ← MUST CHANGE
+
+        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours
+        const TOTAL_REWARD = 1000;
+        const circumference = 560;
 
         const statusEl = document.getElementById('status');
         const actionBtn = document.getElementById('actionBtn');
         const progressCircle = document.getElementById('progressCircle');
         const balanceEl = document.getElementById('balance');
 
-        const TOTAL_MINING_TIME = 5 * 60 * 60 * 1000; // 5 hours
-        const TOTAL_REWARD = 1000;
-        const circumference = 560;
-
-        function getUserId() {
-            if (tg.initDataUnsafe?.user) {
-                userId = tg.initDataUnsafe.user.id;
-                document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name || "Player";
-                return userId;
-            }
-            return null;
-        }
-
-        async function apiRequest(endpoint, method = 'GET', body = null) {
+        async function api(endpoint, method = "GET", body = null) {
             try {
                 const res = await fetch(`${API_BASE}${endpoint}`, {
                     method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {"Content-Type": "application/json"},
                     body: body ? JSON.stringify(body) : null
                 });
                 return await res.json();
-            } catch (e) {
+            } catch(e) {
                 console.error(e);
-                return { success: false };
-            }
-        }
-
-        async function loadUserData() {
-            if (!userId) return;
-            const data = await apiRequest(`/load?user_id=${userId}`);
-            if (data.success) {
-                balance = parseFloat(data.balance) || 0;
-                if (data.mining_start_time) {
-                    miningStartTime = new Date(data.mining_start_time);
-                    checkMiningStatus();
-                }
-                updateUI();
+                return {success: false};
             }
         }
 
@@ -206,21 +178,39 @@
         }
 
         function formatTimeLeft(ms) {
-            if (ms <= 0) return "00:00:00";
-            const hours = Math.floor(ms / 3600000);
-            const minutes = Math.floor((ms % 3600000) / 60000);
-            const seconds = Math.floor((ms % 60000) / 1000);
-            return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            const h = Math.floor(ms / 3600000);
+            const m = Math.floor((ms % 3600000) / 60000);
+            const s = Math.floor((ms % 60000) / 1000);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        function checkMiningStatus() {
-            if (!miningStartTime) return;
+        async function loadData() {
+            if (!userId) return;
+            const data = await api(`/load?user_id=${userId}`);
+            
+            if (data.success) {
+                balance = parseFloat(data.balance) || 0;
+                miningStartTime = data.mining_start_time ? new Date(data.mining_start_time) : null;
+                
+                updateUI();
+                checkMiningProgress();
+            }
+        }
+
+        function checkMiningProgress() {
+            if (!miningStartTime) {
+                statusEl.textContent = "Tap to start 5-hour mining";
+                actionBtn.textContent = "START MINING";
+                actionBtn.classList.remove('mining');
+                updateProgress(0);
+                return;
+            }
 
             const elapsed = Date.now() - miningStartTime.getTime();
             const remaining = TOTAL_MINING_TIME - elapsed;
 
             if (remaining <= 0) {
-                // Mining finished
+                // Ready to claim
                 isMining = false;
                 statusEl.textContent = `✅ Mining Complete!\nYou earned ${TOTAL_REWARD} $DHU`;
                 actionBtn.textContent = `CLAIM ${TOTAL_REWARD} $DHU`;
@@ -234,13 +224,9 @@
                 updateProgress((elapsed / TOTAL_MINING_TIME) * 100);
 
                 // Live Countdown
-                if (countdownInterval) clearInterval(countdownInterval);
-                countdownInterval = setInterval(() => {
+                setInterval(() => {
                     const newRemaining = TOTAL_MINING_TIME - (Date.now() - miningStartTime.getTime());
-                    if (newRemaining <= 0) {
-                        clearInterval(countdownInterval);
-                        checkMiningStatus();
-                    } else {
+                    if (newRemaining > 0) {
                         statusEl.textContent = `Mining in progress...\n${formatTimeLeft(newRemaining)} left`;
                     }
                 }, 1000);
@@ -251,62 +237,44 @@
             if (isMining) return;
 
             miningStartTime = new Date();
-            isMining = true;
-
-            await apiRequest('/start-mining', 'POST', {
+            const res = await api('/start-mining', 'POST', {
                 user_id: userId,
                 start_time: miningStartTime.toISOString()
             });
 
-            statusEl.textContent = "Mining started...";
-            actionBtn.textContent = "MINING IN PROGRESS...";
-            actionBtn.classList.add('mining');
-            updateProgress(0);
-
-            checkMiningStatus();
-        }
-
-        async function claimReward() {
-            if (!isMining && miningStartTime) {
-                balance += TOTAL_REWARD;
-                updateUI();
-
-                await apiRequest('/claim', 'POST', {
-                    user_id: userId,
-                    reward: TOTAL_REWARD
-                });
-
-                // Reset
-                miningStartTime = null;
-                updateProgress(0);
-                statusEl.textContent = "Tap to start 5-hour mining";
-                actionBtn.textContent = "START MINING";
-                actionBtn.classList.remove('mining');
+            if (res.success) {
+                checkMiningProgress();
             }
         }
 
-        function showSection(section) {
-            tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
+        async function claimReward() {
+            const res = await api('/claim', 'POST', { user_id: userId });
+            if (res.success) {
+                balance += TOTAL_REWARD;
+                updateUI();
+                miningStartTime = null;
+                checkMiningProgress();
+            }
         }
 
-        // Button Click
         actionBtn.addEventListener('click', () => {
             if (actionBtn.textContent.includes("CLAIM")) {
                 claimReward();
-            } else if (!isMining) {
+            } else {
                 startMining();
             }
         });
 
         // Initialize
-        window.onload = async () => {
-            userId = getUserId();
-            if (userId) {
-                await loadUserData();
+        window.onload = () => {
+            if (tg.initDataUnsafe?.user) {
+                userId = tg.initDataUnsafe.user.id;
+                document.getElementById('username').textContent = tg.initDataUnsafe.user.first_name;
+                loadData();
             } else {
-                statusEl.textContent = "Error: Could not load user data";
+                statusEl.textContent = "Error loading user data";
             }
         };
     </script>
 </body>
-</html>
+                                                                        </html>
