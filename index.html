@@ -35,60 +35,56 @@
                         inset 0 0 60px rgba(168, 85, 247, 0.5);
             position: relative;
             overflow: hidden;
-            border: 2px solid rgba(255, 215, 0, 0.6);
         }
 
-        .mining-area::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%);
-            animation: pulse 8s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(0.9); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        .mining-area h2 {
-            color: #ffd700;
-            font-size: 24px;
-            text-shadow: 0 0 20px #ffd700, 0 0 30px #a855f7;
-            margin-bottom: 15px;
-            z-index: 3;
+        .coin-container {
             position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 20px auto;
         }
 
         .tap-coin {
             font-size: 160px;
             cursor: pointer;
-            transition: transform 0.1s;
-            filter: drop-shadow(0 0 30px #ffd700);
+            filter: drop-shadow(0 0 35px #ffd700);
             user-select: none;
+            position: relative;
+            z-index: 2;
         }
-        .tap-coin:active { transform: scale(0.85); }
+
+        /* Circular Progress */
+        .progress-ring {
+            position: absolute;
+            top: 0; left: 0;
+            width: 180px;
+            height: 180px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s linear;
+        }
 
         .status {
             font-size: 18px;
-            margin: 15px 0;
+            margin: 15px 0 10px;
             min-height: 28px;
         }
 
         .claim-btn {
-            background: linear-gradient(#00ff00, #00cc00);
+            background: linear-gradient(#00ff88, #00cc66);
             color: black;
             font-weight: bold;
             font-size: 20px;
-            padding: 14px 40px;
+            padding: 14px 50px;
             border: none;
             border-radius: 50px;
-            margin-top: 15px;
+            margin: 10px auto;
             cursor: pointer;
-            box-shadow: 0 0 20px #00ff00;
+            box-shadow: 0 0 25px #00ff88;
             display: none;
+            width: fit-content;
         }
 
         .coin {
@@ -140,7 +136,15 @@
     <div class="mining-area" id="miningArea">
         <h2>🪙 Active Self Miner 🪙</h2>
         
-        <div style="margin: 20px 0;">
+        <div class="coin-container">
+            <!-- Progress Ring -->
+            <svg class="progress-ring" width="180" height="180">
+                <circle class="progress-ring__bg" cx="90" cy="90" r="82" fill="none" stroke="#1a0033" stroke-width="14"/>
+                <circle id="progressCircle" class="progress-ring__circle" cx="90" cy="90" r="82" 
+                        fill="none" stroke="#00ccff" stroke-width="14"
+                        stroke-dasharray="514" stroke-dashoffset="514" stroke-linecap="round"/>
+            </svg>
+            
             <div id="mainCoin" class="tap-coin">🪙</div>
         </div>
 
@@ -165,21 +169,27 @@
         let isMining = false;
         let minedAmount = 0;
         let miningInterval = null;
-        let timerInterval = null;
 
         const mainCoin = document.getElementById('mainCoin');
         const statusEl = document.getElementById('status');
         const claimBtn = document.getElementById('claimBtn');
+        const progressCircle = document.getElementById('progressCircle');
+
+        const circumference = 514; // 2 * PI * 82
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2);
+        }
+
+        function updateProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
         }
 
         function showSection(section) {
             tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
         }
 
-        // Create floating coin effect
         function createFloatingCoin() {
             const area = document.getElementById('miningArea');
             const coin = document.createElement('div');
@@ -191,28 +201,31 @@
             setTimeout(() => coin.remove(), 4000);
         }
 
-        // Start Mining Session (5 hours in real, 30 seconds for demo)
         function startMining() {
             if (isMining) return;
             
             isMining = true;
             minedAmount = 0;
             claimBtn.style.display = 'none';
-            
             statusEl.textContent = "Mining in progress... ⛏️";
-            mainCoin.style.pointerEvents = "none";
-            mainCoin.style.opacity = "0.7";
 
-            // Mining rate: 0.5 DHU per second (demo) → change to lower for real 5 hours
+            mainCoin.style.pointerEvents = "none";
+            mainCoin.style.opacity = "0.85";
+
+            let progress = 0;
+
             miningInterval = setInterval(() => {
-                minedAmount += 0.5;   // Increase this for slower mining
+                minedAmount += 0.45;
+                progress += 100 / (5 * 60 * 60); // Real 5 hours progress
+                // Demo: Fast progress (30 seconds total)
+                // progress += 100 / 30; 
+
+                updateProgress(Math.min(progress, 100));
                 createFloatingCoin();
             }, 800);
 
-            // Demo: 30 seconds (Change to 5*60*60*1000 for real 5 hours)
-            setTimeout(() => {
-                if (isMining) finishMining();
-            }, 30000); // ← Change to 18000000 (5 hours) for production
+            // Demo Timer (30 seconds) - Change to 5 hours in production
+            setTimeout(() => finishMining(), 30000);
         }
 
         function finishMining() {
@@ -223,30 +236,25 @@
             
             statusEl.textContent = `Mined: ${minedAmount.toFixed(2)} $DHU`;
             claimBtn.style.display = 'block';
+            updateProgress(100);
         }
 
-        // Claim Rewards
         claimBtn.addEventListener('click', () => {
             balance += minedAmount;
             updateUI();
             localStorage.setItem('dawBalance', balance);
 
-            // Reset for next session
             minedAmount = 0;
             claimBtn.style.display = 'none';
+            updateProgress(0);
             statusEl.textContent = "Tap the coin to start mining";
         });
 
-        // Tap Coin
         mainCoin.addEventListener('click', () => {
-            if (!isMining) {
-                startMining();
-            } else {
-                createFloatingCoin(); // Extra visual feedback while mining
-            }
+            if (!isMining) startMining();
+            else createFloatingCoin();
         });
 
-        // Initial UI update
         updateUI();
     </script>
 </body>
