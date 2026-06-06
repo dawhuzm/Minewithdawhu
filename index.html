@@ -58,7 +58,7 @@
             color: #ffd700;
             font-size: 24px;
             text-shadow: 0 0 20px #ffd700, 0 0 30px #a855f7;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             z-index: 3;
             position: relative;
         }
@@ -67,60 +67,29 @@
             position: relative;
             height: 190px;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
             margin: 15px 0;
         }
 
-        .penguin {
-            font-size: 135px;
-            position: relative;
+        .fan {
+            font-size: 130px;
+            animation: spinFan 0.8s linear infinite;
+            filter: drop-shadow(0 0 25px #00ffff);
             z-index: 2;
-            animation: penguinMine 1.6s infinite ease-in-out;
         }
 
-        .pickaxe {
-            font-size: 48px;
-            position: absolute;
-            left: 48%;
-            bottom: 78px;
-            transform-origin: 30% 70%;
-            animation: swingPickaxe 1.6s infinite ease-in-out;
-            z-index: 3;
+        @keyframes spinFan {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .rock {
-            font-size: 58px;
+        .fan-base {
             position: absolute;
-            left: 35%;
-            bottom: 28px;
+            font-size: 45px;
+            bottom: 35px;
+            color: #aaa;
             z-index: 1;
-        }
-
-        .mined-coin {
-            position: absolute;
-            font-size: 32px;
-            color: #ffd700;
-            left: 42%;
-            bottom: 68px;
-            animation: coinPop 2s infinite;
-            z-index: 2;
-            text-shadow: 0 0 20px gold;
-        }
-
-        @keyframes penguinMine {
-            0%, 100% { transform: rotate(-10deg) translateX(-5px); }
-            50% { transform: rotate(12deg) translateX(8px); }
-        }
-
-        @keyframes swingPickaxe {
-            0%, 100% { transform: rotate(-45deg); }
-            50% { transform: rotate(35deg); }
-        }
-
-        @keyframes coinPop {
-            0%, 100% { transform: scale(0.7) translateY(10px); opacity: 0.6; }
-            45% { transform: scale(1.25) translateY(-35px); opacity: 1; }
         }
 
         .coin {
@@ -139,122 +108,4 @@
             100% { transform: translateY(-340px) scale(1.25) rotate(420deg); opacity: 0; }
         }
 
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            display: flex; justify-content: space-around; 
-            background: rgba(10,0,30,0.98); padding: 12px 8px; gap: 8px;
-        }
-        .nav-card {
-            background: linear-gradient(145deg, #2a0055, #4a0088);
-            border: 3px solid #ff8800;
-            color: white; padding: 12px 8px; border-radius: 18px;
-            flex: 1; text-align: center; font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 136, 0, 0.6);
-            cursor: pointer;
-        }
-        .nav-card:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 25px rgba(255, 136, 0, 0.9);
-        }
-        .icon { font-size: 1.8em; margin-bottom: 4px; display: block; }
-    </style>
-</head>
-<body>
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="profile-card">
-            <div style="width:48px;height:48px;background:linear-gradient(#ff00ff,#00ffff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid #fff;">👤</div>
-            <div><strong id="username">Player</strong></div>
-        </div>
-
-        <div class="top-card" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            <strong id="balance">0.00</strong> Dhu
-        </div>
-
-        <div class="top-card">
-            💼 Wallet
-        </div>
-    </div>
-
-    <!-- Mining Area -->
-    <div class="mining-area" id="miningArea">
-        <h2>🪙 Active Self Miner 🪙</h2>
-        
-        <div class="miner-scene">
-            <div class="penguin">🐧</div>
-            <div class="pickaxe">⛏️</div>
-            <div class="rock">🪨</div>
-            <div class="mined-coin">💎</div>
-        </div>
-
-        <p style="color:#ffd700; font-size:19px; margin:8px 0; text-shadow: 0 0 10px #a855f7;">
-            Mining $DHU Coins...
-        </p>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-card" onclick="showSection('home')">
-            <span class="icon">🏠</span>
-            HOME
-        </div>
-        <div class="nav-card" onclick="showSection('tasks')">
-            <span class="icon">🧰</span>
-            TASKS
-        </div>
-        <div class="nav-card" onclick="showSection('invite')">
-            <span class="icon">🫂</span>
-            INVITE
-        </div>
-        <div class="nav-card" onclick="showSection('profile')">
-            <span class="icon">🪪</span>
-            PROFILE
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let balance = parseFloat(localStorage.getItem('dawBalance') || 12.45);
-
-        function updateUI() {
-            document.getElementById('balance').textContent = balance.toFixed(2);
-            document.getElementById('username').textContent = tg.initDataUnsafe?.user?.first_name || "Player";
-        }
-
-        function showSection(section) {
-            tg.showPopup({message: `${section.toUpperCase()} section coming soon! 🔥`});
-        }
-
-        // Floating coins
-        function createFloatingCoin() {
-            const area = document.getElementById('miningArea');
-            const coin = document.createElement('div');
-            coin.className = 'coin';
-            coin.textContent = '🪙';
-            
-            const left = Math.random() * 75 + 13;
-            coin.style.left = left + '%';
-            coin.style.bottom = '95px';
-            coin.style.animationDuration = (3.5 + Math.random() * 3) + 's';
-            
-            area.appendChild(coin);
-            setTimeout(() => coin.remove(), 8000);
-        }
-
-        setInterval(() => {
-            if (Math.random() > 0.2) createFloatingCoin();
-        }, 240);
-
-        // Passive mining
-        setInterval(() => {
-            balance += 0.022;
-            updateUI();
-            localStorage.setItem('dawBalance', balance);
-        }, 4800);
-
-        updateUI();
-    </script>
-</body>
-</html>
+        .bottom-nav
