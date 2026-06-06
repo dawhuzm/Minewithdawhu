@@ -34,4 +34,93 @@
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             display: flex; justify-content: space-around; 
-            background: rgba(0,0,0,0.95); padding: 12px 10px; gap:
+            background: rgba(0,0,0,0.95); padding: 12px 10px; gap: 10px;
+        }
+        .nav-card {
+            background: linear-gradient(145deg, #1a0033, #2a0055);
+            border: 2px solid #ff6600;
+            color: white;
+            padding: 12px 8px;
+            border-radius: 14px;
+            flex: 1;
+            font-size: 0.95em;
+            font-weight: bold;
+            box-shadow: 0 0 12px rgba(255, 102, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-card:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="profile-box">
+            <div style="width:45px;height:45px;background:#6600ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;">👤</div>
+            <div><strong id="username">Player</strong></div>
+        </div>
+
+        <div class="blue-box">
+            Balance: <strong id="balance">0.0000</strong> DHU
+        </div>
+
+        <div class="blue-box">
+            💼 Wallet
+        </div>
+    </div>
+
+    <!-- Mining Area -->
+    <div class="mine-area">
+        <h2>⛏️ MINING MECHANISM</h2>
+        <p style="font-size:1.5em; color:#00ffff; margin:15px 0;">5 Hour Duration</p>
+        <div style="margin:20px 0; font-size:85px;">⛏️</div>
+        <p id="status" style="color:#00ff41; font-size:1.1em;">Mining in progress...</p>
+    </div>
+
+    <!-- Claim Button -->
+    <button class="claim-btn" onclick="claimReward()">CLAIM</button>
+
+    <!-- Bottom Navigation - Modern Card Style -->
+    <div class="bottom-nav">
+        <div class="nav-card" onclick="showSection('invite')">Invite</div>
+        <div class="nav-card" onclick="showSection('tasks')">Tasks</div>
+        <div class="nav-card" onclick="showSection('profile')">Profile</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let balance = parseFloat(localStorage.getItem('dawBalance') || 0);
+
+        function updateUI() {
+            document.getElementById('balance').textContent = balance.toFixed(4);
+            document.getElementById('username').textContent = tg.initDataUnsafe?.user?.first_name || "Player";
+        }
+
+        function claimReward() {
+            const reward = 0.8 + (Math.random() * 0.4);
+            balance += reward;
+            localStorage.setItem('dawBalance', balance);
+            updateUI();
+            tg.showPopup({message: `✅ +${reward.toFixed(2)} DHU Claimed!`});
+        }
+
+        function showSection(section) {
+            tg.showPopup({message: `${section} section coming soon! 🔥`});
+        }
+
+        // Passive mining
+        setInterval(() => {
+            balance += 0.004;
+            updateUI();
+            localStorage.setItem('dawBalance', balance);
+        }, 2500);
+
+        updateUI();
+    </script>
+</body>
+</html>
