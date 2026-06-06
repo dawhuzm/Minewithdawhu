@@ -44,7 +44,7 @@
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,215,0,0.18) 0%, transparent 70%);
             animation: pulse 8s infinite;
             pointer-events: none;
         }
@@ -58,86 +58,85 @@
             color: #ffd700;
             font-size: 24px;
             text-shadow: 0 0 20px #ffd700, 0 0 30px #a855f7;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             z-index: 3;
             position: relative;
         }
 
-        /* Mining Scene Container */
         .miner-scene {
             position: relative;
-            height: 180px;
+            height: 190px;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .penguin {
-            font-size: 120px;
+            font-size: 135px;
             position: relative;
             z-index: 2;
-            animation: penguinMine 1.8s infinite;
+            animation: penguinMine 1.6s infinite ease-in-out;
         }
 
         .pickaxe {
-            font-size: 45px;
+            font-size: 48px;
             position: absolute;
-            left: 52%;
-            bottom: 75px;
-            transform-origin: center bottom;
-            animation: swingPick 1.8s infinite;
-            z-index: 2;
+            left: 48%;
+            bottom: 78px;
+            transform-origin: 30% 70%;
+            animation: swingPickaxe 1.6s infinite ease-in-out;
+            z-index: 3;
         }
 
         .rock {
-            font-size: 55px;
+            font-size: 58px;
             position: absolute;
-            left: 38%;
-            bottom: 25px;
+            left: 35%;
+            bottom: 28px;
             z-index: 1;
         }
 
         .mined-coin {
             position: absolute;
-            font-size: 28px;
+            font-size: 32px;
             color: #ffd700;
-            left: 45%;
-            bottom: 55px;
-            animation: coinPop 2.2s infinite;
+            left: 42%;
+            bottom: 68px;
+            animation: coinPop 2s infinite;
             z-index: 2;
-            text-shadow: 0 0 15px gold;
+            text-shadow: 0 0 20px gold;
         }
 
         @keyframes penguinMine {
-            0%, 100% { transform: rotate(-8deg) translateX(-8px); }
-            50% { transform: rotate(8deg) translateX(6px); }
+            0%, 100% { transform: rotate(-10deg) translateX(-5px); }
+            50% { transform: rotate(12deg) translateX(8px); }
         }
 
-        @keyframes swingPick {
-            0%, 100% { transform: rotate(-35deg); }
-            50% { transform: rotate(25deg); }
+        @keyframes swingPickaxe {
+            0%, 100% { transform: rotate(-45deg); }
+            50% { transform: rotate(35deg); }
         }
 
         @keyframes coinPop {
-            0%, 100% { transform: scale(0.6) translateY(0); opacity: 0.4; }
-            50% { transform: scale(1.2) translateY(-25px); opacity: 1; }
+            0%, 100% { transform: scale(0.7) translateY(10px); opacity: 0.6; }
+            45% { transform: scale(1.25) translateY(-35px); opacity: 1; }
         }
 
         .coin {
             position: absolute;
-            font-size: 34px;
+            font-size: 36px;
             color: #ffd700;
-            text-shadow: 0 0 15px gold, 0 0 25px #fff;
-            animation: floatCoin 4.5s linear infinite;
+            text-shadow: 0 0 15px gold, 0 0 30px #fff;
+            animation: floatCoin 4.2s linear infinite;
             user-select: none;
             z-index: 1;
         }
 
         @keyframes floatCoin {
-            0% { transform: translateY(120px) scale(0.5) rotate(0deg); opacity: 0; }
-            15% { opacity: 1; }
-            100% { transform: translateY(-320px) scale(1.2) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(130px) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-340px) scale(1.25) rotate(420deg); opacity: 0; }
         }
 
         .bottom-nav {
@@ -185,10 +184,10 @@
             <div class="penguin">🐧</div>
             <div class="pickaxe">⛏️</div>
             <div class="rock">🪨</div>
-            <div class="mined-coin">🪙</div>
+            <div class="mined-coin">💎</div>
         </div>
 
-        <p style="color:#ffd700; font-size:19px; margin:10px 0; text-shadow: 0 0 10px #a855f7;">
+        <p style="color:#ffd700; font-size:19px; margin:8px 0; text-shadow: 0 0 10px #a855f7;">
             Mining $DHU Coins...
         </p>
     </div>
@@ -235,25 +234,25 @@
             coin.className = 'coin';
             coin.textContent = '🪙';
             
-            const left = Math.random() * 78 + 11;
+            const left = Math.random() * 75 + 13;
             coin.style.left = left + '%';
-            coin.style.bottom = '90px';
-            coin.style.animationDuration = (3.8 + Math.random() * 3) + 's';
+            coin.style.bottom = '95px';
+            coin.style.animationDuration = (3.5 + Math.random() * 3) + 's';
             
             area.appendChild(coin);
-            setTimeout(() => coin.remove(), 8500);
+            setTimeout(() => coin.remove(), 8000);
         }
 
         setInterval(() => {
-            if (Math.random() > 0.22) createFloatingCoin();
-        }, 260);
+            if (Math.random() > 0.2) createFloatingCoin();
+        }, 240);
 
         // Passive mining
         setInterval(() => {
-            balance += 0.02;
+            balance += 0.022;
             updateUI();
             localStorage.setItem('dawBalance', balance);
-        }, 5000);
+        }, 4800);
 
         updateUI();
     </script>
