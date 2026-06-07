@@ -96,6 +96,12 @@
             pointer-events: none;
         }
 
+        .mined {
+            font-size: 18px;
+            margin: 15px 0 25px;
+            color: #a5b4fc;
+        }
+
         .action-btn {
             background: linear-gradient(90deg, #10b981, #34d399);
             color: black;
@@ -106,19 +112,13 @@
             border: none;
             width: 90%;
             max-width: 320px;
-            margin: 20px auto;
+            margin: 10px auto 30px;
             box-shadow: 0 0 25px #34d399;
             cursor: pointer;
         }
         .action-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-        }
-
-        .mined {
-            font-size: 18px;
-            margin: 15px 0;
-            color: #a5b4fc;
         }
 
         .bottom-nav {
@@ -148,7 +148,7 @@
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="player">👤 Player</div>
-        <div id="balance" class="balance">45.73 Dhu</div>
+        <div id="balance" class="balance">50.40 Dhu</div>
         <div class="wallet">💼 Wallet</div>
     </div>
 
@@ -164,9 +164,9 @@
             <div class="center-circle">$DHU</div>
         </div>
         
-        <button id="action-btn" class="action-btn">TAP TO START MINING</button>
+        <div class="mined">Mined: <span id="mined-amount">0.08</span> $DHU</div>
         
-        <div class="mined">Mined: <span id="mined-amount">0.15</span> $DHU</div>
+        <button id="action-btn" class="action-btn">TAP TO START MINING</button>
     </div>
 
     <!-- Bottom Navigation -->
@@ -182,8 +182,8 @@
         if (tg.expand) tg.expand();
         if (tg.ready) tg.ready();
 
-        let balance = 45.73;
-        let mined = 0.15;
+        let balance = 50.40;
+        let mined = 0.08;
         let isMining = false;
         let progressInterval = null;
 
@@ -203,7 +203,7 @@
             actionBtn.disabled = true;
 
             let progress = 0;
-            const duration = 3000; // 3 seconds
+            const duration = 3000;
             const startTime = Date.now();
 
             progressInterval = setInterval(() => {
@@ -225,7 +225,6 @@
             mined += 1.2 + Math.random() * 0.8;
             balance += 0.45;
 
-            // Change button to Claim Reward
             actionBtn.textContent = "CLAIM REWARD";
             actionBtn.disabled = false;
             actionBtn.onclick = claimReward;
@@ -241,11 +240,9 @@
 
                 alert("✅ Reward Claimed Successfully!");
                 
-                // Reset button to Start Mining
                 actionBtn.textContent = "TAP TO START MINING";
                 actionBtn.onclick = startMining;
                 
-                // Reset progress ring
                 progressRing.setAttribute('stroke-dashoffset', 665);
                 isMining = false;
                 
@@ -253,7 +250,6 @@
             }
         }
 
-        // Initial button setup
         actionBtn.onclick = startMining;
 
         // Passive mining
