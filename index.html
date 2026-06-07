@@ -96,8 +96,8 @@
             font-weight: bold;
             box-shadow: 0 0 50px #22d3ee;
             border: 8px solid #10b981;
-            cursor: pointer;
             user-select: none;
+            pointer-events: none; /* No longer clickable */
         }
 
         .mined {
@@ -117,6 +117,16 @@
             max-width: 320px;
             margin: 20px auto;
             box-shadow: 0 0 25px #34d399;
+        }
+        .tap-area {
+            margin: 20px auto;
+            padding: 14px 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: bold;
+            width: fit-content;
+            cursor: pointer;
         }
 
         .bottom-nav {
@@ -159,8 +169,10 @@
                 <circle id="progress-ring" class="progress-ring" cx="130" cy="130" r="106"
                     stroke-dasharray="665" stroke-dashoffset="665"/>
             </svg>
-            <div id="mine-button" class="center-circle">$DHU</div>
+            <div class="center-circle">$DHU</div>
         </div>
+        
+        <div onclick="startMining()" class="tap-area">TAP TO START MINING</div>
         
         <div class="mined">Mined: <span id="mined-amount">2.55</span> $DHU</div>
         
@@ -186,7 +198,6 @@
         let progressInterval = null;
 
         const progressRing = document.getElementById('progress-ring');
-        const mineButton = document.getElementById('mine-button');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -198,14 +209,13 @@
             isMining = true;
 
             let progress = 0;
-            const duration = 2800; // 2.8 seconds mining time
+            const duration = 3000; // 3 seconds per mining cycle
             const startTime = Date.now();
 
             progressInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 progress = Math.min((elapsed / duration) * 100, 100);
 
-                // Update progress circle
                 const offset = 665 * (1 - progress / 100);
                 progressRing.setAttribute('stroke-dashoffset', offset);
 
@@ -217,33 +227,34 @@
 
         function finishMining() {
             clearInterval(progressInterval);
-            mined += 1.2 + Math.random() * 0.6;
-            balance += 0.4;
+            mined += 1.15 + Math.random() * 0.7;
+            balance += 0.45;
 
-            // Reset progress
             setTimeout(() => {
                 progressRing.setAttribute('stroke-dashoffset', 665);
                 isMining = false;
-            }, 400);
+            }, 500);
 
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
         }
 
-        // Tap to start mining
-        mineButton.addEventListener('click', startMining);
-        mineButton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startMining();
-        });
+        function claimReward() {
+            if (mined > 0) {
+                balance += mined;
+                mined = 0;
+                alert("✅ Reward Claimed Successfully!");
+                updateUI();
+            }
+        }
 
         // Auto passive mining
         setInterval(() => {
             if (!isMining) {
-                mined += 0.02;
+                mined += 0.025;
                 updateUI();
             }
-        }, 1500);
+        }, 1400);
 
         updateUI();
     </script>
