@@ -203,7 +203,7 @@
             font-size: 32px;
         }
 
-        /* Invite Section - Added minimally */
+        /* Invite Section */
         .invite-section {
             display: none;
             padding: 30px 20px;
@@ -236,6 +236,20 @@
             cursor: pointer;
             width: 100%;
             max-width: 260px;
+        }
+
+        /* Task Section - Added */
+        .task-section {
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .task-box {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 320px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -273,7 +287,17 @@
         </div>
     </div>
 
-    <!-- INVITE SECTION - Added -->
+    <!-- TASK SECTION -->
+    <div id="task-section" class="task-section">
+        <div class="task-box">
+            <h2>📋 Daily Tasks</h2>
+            <p><strong>Join channel and earn 59 $DHU</strong></p>
+            <p style="margin: 15px 0; color: #4ade80;">@mrcseller</p>
+            <button class="btn" onclick="completeTask()">✅ Claim 59 $DHU</button>
+        </div>
+    </div>
+
+    <!-- INVITE SECTION -->
     <div id="invite-section" class="invite-section">
         <div class="invite-box">
             <h2>🤑 Invite Friends</h2>
@@ -336,7 +360,8 @@
         const actionBtn = document.getElementById('action-btn');
         const homeSection = document.getElementById('home-section');
         const settingsSection = document.getElementById('settings-section');
-        const inviteSection = document.getElementById('invite-section');  /* Added */
+        const inviteSection = document.getElementById('invite-section');
+        const taskSection = document.getElementById('task-section');  /* Added */
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -397,7 +422,6 @@
             alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
         }
 
-        /* New functions for Invite */
         function copyReferralLink() {
             const link = document.getElementById('referral-link').textContent.trim();
             navigator.clipboard.writeText(link).then(() => {
@@ -414,6 +438,12 @@
             }
         }
 
+        function completeTask() {
+            balance += 59;
+            alert("✅ 59 $DHU added to your balance!");
+            updateUI();
+        }
+
         function switchTab(n) {
             document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
 
@@ -421,20 +451,26 @@
                 homeSection.style.display = 'block';
                 settingsSection.style.display = 'none';
                 inviteSection.style.display = 'none';
+                taskSection.style.display = 'none';
             } 
+            else if (n === 1) {
+                homeSection.style.display = 'none';
+                settingsSection.style.display = 'none';
+                inviteSection.style.display = 'none';
+                taskSection.style.display = 'block';
+            }
             else if (n === 2) {
                 homeSection.style.display = 'none';
                 settingsSection.style.display = 'none';
                 inviteSection.style.display = 'block';
+                taskSection.style.display = 'none';
             }
             else if (n === 3) {
                 homeSection.style.display = 'none';
                 settingsSection.style.display = 'block';
                 inviteSection.style.display = 'none';
+                taskSection.style.display = 'none';
             } 
-            else {
-                alert("This tab is coming soon!");
-            }
         }
 
         actionBtn.onclick = startMining;
@@ -443,4 +479,4 @@
         updateUI();
     </script>
 </body>
-</html>
+    </html>
