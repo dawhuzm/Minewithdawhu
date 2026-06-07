@@ -30,6 +30,13 @@
             gap: 10px;
             font-weight: bold;
         }
+        .player-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
         .balance {
             background: linear-gradient(135deg, #f97316, #eab308);
             color: black;
@@ -121,15 +128,14 @@
             cursor: not-allowed;
         }
 
-        /* Separate Bottom Buttons */
+        /* Bottom Navigation - No border between body and buttons */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             background: rgba(0,0,0,0.85);
             display: flex;
-            padding: 8px 10px 10px;
+            padding: 12px 10px 14px;
             gap: 8px;
-            border-top: 1px solid #6b21a8;
         }
         .nav-item {
             flex: 1;
@@ -154,13 +160,14 @@
             display: block;
             margin-bottom: 4px;
         }
-
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
+    <!-- Top Bar with Telegram User -->
     <div class="top-bar">
-        <div class="player">👤 Player</div>
+        <div id="player-info" class="player">
+            👤 <span id="player-name">Player</span>
+        </div>
         <div id="balance" class="balance">50.40 Dhu</div>
         <div class="wallet">💼 Wallet</div>
     </div>
@@ -182,7 +189,7 @@
         <button id="action-btn" class="action-btn">TAP TO START MINING</button>
     </div>
 
-    <!-- Bottom Navigation - 4 Separate Buttons -->
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab(0)">
             <span class="nav-icon">🏠</span>
@@ -206,6 +213,23 @@
         const tg = window.Telegram.WebApp || {};
         if (tg.expand) tg.expand();
         if (tg.ready) tg.ready();
+
+        // Display Telegram User Info
+        function loadUserInfo() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('player-name').textContent = user.first_name || "Player";
+                
+                // Add profile photo if available
+                const playerDiv = document.getElementById('player-info');
+                if (user.photo_url) {
+                    const img = document.createElement('img');
+                    img.src = user.photo_url;
+                    img.className = 'player-img';
+                    playerDiv.insertBefore(img, playerDiv.firstChild);
+                }
+            }
+        }
 
         let balance = 50.40;
         let mined = 0.08;
@@ -279,7 +303,6 @@
             document.querySelectorAll('.nav-item').forEach((item, i) => {
                 item.classList.toggle('active', i === n);
             });
-            // You can add different screens later
             if (n !== 0) {
                 alert("This tab is coming soon!");
             }
@@ -295,6 +318,8 @@
             }
         }, 1400);
 
+        // Initialize
+        loadUserInfo();
         updateUI();
     </script>
 </body>
