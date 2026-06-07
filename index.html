@@ -22,7 +22,6 @@
             justify-content: space-between;
             background: #1a1a1a;
             gap: 6px;
-            max-width: 100%;
         }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
@@ -93,7 +92,7 @@
             stroke: #22d3ee;
             stroke-width: 16;
             stroke-linecap: round;
-            transition: stroke-dashoffset 0.05s linear;
+            transition: stroke-dashoffset 0.08s linear;
         }
         .center-circle {
             position: absolute;
@@ -134,6 +133,10 @@
             box-shadow: 0 0 20px #4ade80;
             cursor: pointer;
         }
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         .bottom-nav {
             position: fixed;
@@ -167,7 +170,6 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar - Compressed & Stable -->
     <div class="top-bar">
         <div id="player-info" class="player">
             👤 <span id="player-name">Player</span>
@@ -177,7 +179,7 @@
     </div>
 
     <div class="main">
-        <div class="title">Mining $Dawhu ⛏️</div>
+        <div class="title">Mining $Dawhu ⛏️ <small>(5 Hours)</small></div>
         
         <div class="progress-container">
             <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
@@ -190,27 +192,14 @@
         
         <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
         
-        <button id="action-btn" class="action-btn">TAP TO START MINING</button>
+        <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab(0)">
-            <span class="nav-icon">🏠</span>
-            Home
-        </div>
-        <div class="nav-item" onclick="switchTab(1)">
-            <span class="nav-icon">📋</span>
-            Task
-        </div>
-        <div class="nav-item" onclick="switchTab(2)">
-            <span class="nav-icon">🤑</span>
-            Invite
-        </div>
-        <div class="nav-item" onclick="switchTab(3)">
-            <span class="nav-icon">⚙️</span>
-            Settings
-        </div>
+        <div class="nav-item active" onclick="switchTab(0)"><span class="nav-icon">🏠</span>Home</div>
+        <div class="nav-item" onclick="switchTab(1)"><span class="nav-icon">📋</span>Task</div>
+        <div class="nav-item" onclick="switchTab(2)"><span class="nav-icon">🤑</span>Invite</div>
+        <div class="nav-item" onclick="switchTab(3)"><span class="nav-icon">⚙️</span>Settings</div>
     </nav>
 
     <script>
@@ -232,7 +221,7 @@
             }
         }
 
-        let balance = 99.99;
+        let balance = 50.85;
         let mined = 2.18;
         let isMining = false;
         let progressInterval = null;
@@ -248,28 +237,32 @@
         function startMining() {
             if (isMining) return;
             isMining = true;
-            actionBtn.textContent = "MINING...";
+
+            actionBtn.textContent = "MINING 5 HOURS...";
             actionBtn.disabled = true;
 
             let progress = 0;
-            const duration = 3000;
+            const duration = 30000; // 30 seconds for demo (represents 5 hours)
             const startTime = Date.now();
 
             progressInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 progress = Math.min((elapsed / duration) * 100, 100);
+
                 const offset = 615 * (1 - progress / 100);
                 progressRing.setAttribute('stroke-dashoffset', offset);
+
                 if (progress >= 100) finishMining();
-            }, 30);
+            }, 50);
         }
 
         function finishMining() {
             clearInterval(progressInterval);
-            mined += 1.2 + Math.random() * 0.8;
-            balance += 0.45;
+            
+            mined = 99.99;           // Big reward after 5 hours
+            balance += 99.99;
 
-            actionBtn.textContent = "CLAIM REWARD";
+            actionBtn.textContent = "CLAIM 99.99 $DHU";
             actionBtn.disabled = false;
             actionBtn.onclick = claimReward;
 
@@ -278,16 +271,15 @@
         }
 
         function claimReward() {
-            if (mined > 0) {
-                balance += mined;
-                mined = 0;
-                alert("✅ Reward Claimed Successfully!");
-                actionBtn.textContent = "TAP TO START MINING";
-                actionBtn.onclick = startMining;
-                progressRing.setAttribute('stroke-dashoffset', 615);
-                isMining = false;
-                updateUI();
-            }
+            alert("✅ 99.99 $DHU Claimed Successfully!");
+            
+            // Reset for next session
+            mined = 0;
+            actionBtn.textContent = "TAP TO START 5H MINING";
+            actionBtn.onclick = startMining;
+            progressRing.setAttribute('stroke-dashoffset', 615);
+            isMining = false;
+            updateUI();
         }
 
         function switchTab(n) {
@@ -296,13 +288,6 @@
         }
 
         actionBtn.onclick = startMining;
-
-        setInterval(() => {
-            if (!isMining) {
-                mined += 0.02;
-                updateUI();
-            }
-        }, 1400);
 
         loadUserInfo();
         updateUI();
