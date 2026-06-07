@@ -520,22 +520,15 @@
         function switchTab(n) {
             document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
 
-            // Hide all sections first
             homeSection.style.display = 'none';
             taskSection.style.display = 'none';
             inviteSection.style.display = 'none';
             settingsSection.style.display = 'none';
 
-            // Show only the selected one
-            if (n === 0) {
-                homeSection.style.display = 'block';
-            } else if (n === 1) {
-                taskSection.style.display = 'block';
-            } else if (n === 2) {
-                inviteSection.style.display = 'block';
-            } else if (n === 3) {
-                settingsSection.style.display = 'block';
-            }
+            if (n === 0) homeSection.style.display = 'block';
+            else if (n === 1) taskSection.style.display = 'block';
+            else if (n === 2) inviteSection.style.display = 'block';
+            else if (n === 3) settingsSection.style.display = 'block';
         }
 
         // Initialize
@@ -543,6 +536,7 @@
         updateUI();
         updateWalletButton();
         actionBtn.onclick = startMining;
+        switchTab(0); // Ensure we start on Home
     </script>
 </body>
     </html>
