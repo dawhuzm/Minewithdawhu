@@ -20,17 +20,37 @@
             display: flex;
             flex-direction: column;
             background: #1a1a1a;
-            gap: 6px;
+            gap: 8px;
         }
         .top-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            gap: 6px;
+            gap: 8px;
         }
-        .player, .wallet, .usdt-btn, .balance {
-            padding: 5px 18px;
+        .player {
+            background: linear-gradient(135deg, #6b21a8, #a855f7);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            min-width: 160px;
+        }
+        .player-img {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+        .wallet, .usdt-btn {
+            background: #27272a;
+            padding: 8px 18px;
             border-radius: 50px;
             font-weight: bold;
             font-size: 16px;
@@ -42,35 +62,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .player {
-            background: linear-gradient(135deg, #6b21a8, #a855f7);
             gap: 6px;
             flex-shrink: 0;
-        }
-        .player-img {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ddd;
+            border: 2px solid #3b82f6;
         }
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-        }
-        .wallet {
-            background: #27272a;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .usdt-btn {
-            background: #27272a;
-            gap: 6px;
-            flex-shrink: 0;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
         }
         .player:active, .balance:active, .wallet:active, .usdt-btn:active {
             transform: scale(0.94);
+        }
+
+        /* Thin separator line */
+        .separator {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 2px 0;
         }
 
         .main {
@@ -262,7 +279,7 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar - Only positioning modified -->
+    <!-- Top Bar - Only this section modified -->
     <div class="top-bar">
         <div class="top-row">
             <div id="player-info" class="player" onclick="showPlayerInfo()">
@@ -272,6 +289,9 @@
                 🔗 Wallet
             </div>
         </div>
+        
+        <div class="separator"></div>
+        
         <div class="top-row">
             <div id="balance" class="balance" onclick="showBalanceInfo()">
                 50.85 Dhu
