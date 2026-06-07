@@ -13,29 +13,31 @@
             color: white;
             min-height: 100vh;
             padding-bottom: 85px;
+            overflow-x: hidden;
         }
         .top-bar {
-            padding: 10px 12px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #1a1a1a;
             gap: 6px;
+            max-width: 100%;
         }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
             flex-shrink: 0;
         }
         .player-img {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ddd;
@@ -43,52 +45,53 @@
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-            padding: 6px 20px;
+            padding: 5px 18px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 17px;
+            font-size: 16px;
             text-align: center;
             white-space: nowrap;
             flex-grow: 1;
+            max-width: 140px;
         }
         .wallet {
             background: #27272a;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 15px;
+            gap: 5px;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
         .main {
             text-align: center;
-            padding: 20px 20px 10px;
+            padding: 15px 20px 10px;
         }
         .title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             color: #e5e7eb;
         }
 
         .progress-container {
             position: relative;
-            width: 260px;
-            height: 260px;
-            margin: 20px auto;
+            width: 240px;
+            height: 240px;
+            margin: 15px auto;
         }
         .progress-circle { transform: rotate(-90deg); }
         .progress-bg {
             fill: none;
             stroke: #374151;
-            stroke-width: 18;
+            stroke-width: 16;
         }
         .progress-ring {
             fill: none;
             stroke: #22d3ee;
-            stroke-width: 18;
+            stroke-width: 16;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.05s linear;
         }
@@ -97,43 +100,39 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 190px;
-            height: 190px;
+            width: 170px;
+            height: 170px;
             background: radial-gradient(circle, #1e40af, #111827);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
+            font-size: 44px;
             font-weight: bold;
-            box-shadow: 0 0 50px #22d3ee;
+            box-shadow: 0 0 45px #22d3ee;
             border: 8px solid #10b981;
             pointer-events: none;
         }
 
         .mined {
-            font-size: 18px;
-            margin: 15px 0 25px;
+            font-size: 17px;
+            margin: 12px 0 20px;
             color: #9ca3af;
         }
 
         .action-btn {
             background: linear-gradient(90deg, #15803d, #4ade80);
             color: black;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
-            padding: 16px 40px;
+            padding: 14px 40px;
             border-radius: 50px;
             border: none;
-            width: 90%;
-            max-width: 320px;
-            margin: 10px auto 30px;
-            box-shadow: 0 0 25px #4ade80;
+            width: 88%;
+            max-width: 300px;
+            margin: 10px auto 25px;
+            box-shadow: 0 0 20px #4ade80;
             cursor: pointer;
-        }
-        .action-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .bottom-nav {
@@ -141,36 +140,34 @@
             bottom: 0; left: 0; right: 0;
             background: #1a1a1a;
             display: flex;
-            padding: 8px 10px 10px;
-            gap: 8px;
+            padding: 8px 8px 12px;
+            gap: 6px;
         }
         .nav-item {
             flex: 1;
             background: #27272a;
             border: 2px solid #4b5563;
-            border-radius: 16px;
-            padding: 10px 6px 6px;
+            border-radius: 14px;
+            padding: 8px 4px 4px;
             text-align: center;
             color: #d1d5db;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            transition: all 0.2s;
         }
         .nav-item.active {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
             color: white;
             border-color: #eab308;
-            transform: scale(1.05);
         }
         .nav-icon {
-            font-size: 26px;
+            font-size: 24px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
     </style>
 </head>
 <body>
-    <!-- Top Bar - Compressed -->
+    <!-- Top Bar - Compressed & Stable -->
     <div class="top-bar">
         <div id="player-info" class="player">
             👤 <span id="player-name">Player</span>
@@ -183,15 +180,15 @@
         <div class="title">Mining $Dawhu ⛏️</div>
         
         <div class="progress-container">
-            <svg class="progress-circle" width="260" height="260" viewBox="0 0 260 260">
-                <circle class="progress-bg" cx="130" cy="130" r="106"/>
-                <circle id="progress-ring" class="progress-ring" cx="130" cy="130" r="106"
-                    stroke-dasharray="665" stroke-dashoffset="665"/>
+            <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
+                <circle class="progress-bg" cx="120" cy="120" r="98"/>
+                <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
+                    stroke-dasharray="615" stroke-dashoffset="615"/>
             </svg>
             <div class="center-circle">$DHU</div>
         </div>
         
-        <div class="mined">Mined: <span id="mined-amount">1.98</span> $DHU</div>
+        <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
         
         <button id="action-btn" class="action-btn">TAP TO START MINING</button>
     </div>
@@ -236,7 +233,7 @@
         }
 
         let balance = 50.85;
-        let mined = 1.98;
+        let mined = 2.18;
         let isMining = false;
         let progressInterval = null;
 
@@ -261,7 +258,7 @@
             progressInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 progress = Math.min((elapsed / duration) * 100, 100);
-                const offset = 665 * (1 - progress / 100);
+                const offset = 615 * (1 - progress / 100);
                 progressRing.setAttribute('stroke-dashoffset', offset);
                 if (progress >= 100) finishMining();
             }, 30);
@@ -287,16 +284,14 @@
                 alert("✅ Reward Claimed Successfully!");
                 actionBtn.textContent = "TAP TO START MINING";
                 actionBtn.onclick = startMining;
-                progressRing.setAttribute('stroke-dashoffset', 665);
+                progressRing.setAttribute('stroke-dashoffset', 615);
                 isMining = false;
                 updateUI();
             }
         }
 
         function switchTab(n) {
-            document.querySelectorAll('.nav-item').forEach((item, i) => {
-                item.classList.toggle('active', i === n);
-            });
+            document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
             if (n !== 0) alert("This tab is coming soon!");
         }
 
