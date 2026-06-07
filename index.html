@@ -202,6 +202,41 @@
         .telegram-logo {
             font-size: 32px;
         }
+
+        /* Invite Section - Added minimally */
+        .invite-section {
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .invite-box {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .referral-link {
+            background: #27272a;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 15px 0;
+            font-size: 15px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 260px;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +270,21 @@
             <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
             
             <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
+        </div>
+    </div>
+
+    <!-- INVITE SECTION - Added -->
+    <div id="invite-section" class="invite-section">
+        <div class="invite-box">
+            <h2>🤑 Invite Friends</h2>
+            <p>Invite friends and earn <strong>50 $DHU</strong> per referral!</p>
+            
+            <div class="referral-link" id="referral-link">
+                https://t.me/DawhuBot?start=ref123456
+            </div>
+            
+            <button class="btn" onclick="copyReferralLink()">📋 Copy Link</button>
+            <button class="btn" onclick="shareReferralLink()">🔗 Share on Telegram</button>
         </div>
     </div>
 
@@ -286,6 +336,7 @@
         const actionBtn = document.getElementById('action-btn');
         const homeSection = document.getElementById('home-section');
         const settingsSection = document.getElementById('settings-section');
+        const inviteSection = document.getElementById('invite-section');  /* Added */
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -346,18 +397,40 @@
             alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
         }
 
+        /* New functions for Invite */
+        function copyReferralLink() {
+            const link = document.getElementById('referral-link').textContent.trim();
+            navigator.clipboard.writeText(link).then(() => {
+                alert("✅ Referral link copied!");
+            });
+        }
+
+        function shareReferralLink() {
+            const link = document.getElementById('referral-link').textContent.trim();
+            if (tg.shareURL) {
+                tg.shareURL(link, "Join me on Dawhucoin and start mining $DHU!");
+            } else {
+                alert("Share this link:\n" + link);
+            }
+        }
+
         function switchTab(n) {
             document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
 
             if (n === 0) {
-                // Show Home
                 homeSection.style.display = 'block';
                 settingsSection.style.display = 'none';
+                inviteSection.style.display = 'none';
             } 
+            else if (n === 2) {
+                homeSection.style.display = 'none';
+                settingsSection.style.display = 'none';
+                inviteSection.style.display = 'block';
+            }
             else if (n === 3) {
-                // Show Settings
                 homeSection.style.display = 'none';
                 settingsSection.style.display = 'block';
+                inviteSection.style.display = 'none';
             } 
             else {
                 alert("This tab is coming soon!");
