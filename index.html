@@ -257,6 +257,15 @@
             width: 100%;
             max-width: 260px;
         }
+
+        /* Task Section Only */
+        .task-item {
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -300,16 +309,33 @@
         </div>
     </div>
 
-    <!-- TASK SECTION -->
+    <!-- TASK SECTION - Only this part changed -->
     <div id="task-section" class="task-section">
         <div class="task-box">
             <h2>Welcome to Tasks Section</h2>
-            <p style="color: #4ade80; font-weight: bold; margin: 15px 0;">1 Task Available</p>
+            <p style="color: #4ade80; font-weight: bold; margin: 15px 0;">3 Tasks Available</p>
             
-            <div style="margin: 20px 0; text-align: left;">
-                <strong>Task 1:</strong><br>
-                Join Dawhu Squad<br><br>
-                <button id="task-btn-1" class="btn" onclick="doTask(1)">Do Task 💸</button>
+            <div id="tasks-container">
+                <!-- Task 1 -->
+                <div class="task-item" id="task-1">
+                    <strong>Task 1:</strong><br>
+                    Join Dawhu Squad<br><br>
+                    <button id="task-btn-1" class="btn" onclick="doTask(1)">Do Task 💸</button>
+                </div>
+                
+                <!-- Task 2 -->
+                <div class="task-item" id="task-2">
+                    <strong>Task 2:</strong><br>
+                    Complete Task 2<br><br>
+                    <button id="task-btn-2" class="btn" onclick="doTask(2)">Do Task 💸</button>
+                </div>
+                
+                <!-- Task 3 -->
+                <div class="task-item" id="task-3">
+                    <strong>Task 3:</strong><br>
+                    Complete Task 3<br><br>
+                    <button id="task-btn-3" class="btn" onclick="doTask(3)">Do Task 💸</button>
+                </div>
             </div>
         </div>
     </div>
@@ -486,13 +512,20 @@
             updateUI();
         }
 
+        // ==================== TASK SECTION ONLY ====================
         function doTask(taskId) {
             const btn = document.getElementById(`task-btn-${taskId}`);
-            
-            window.open("https://t.me/dawhusquotex", "_blank");
+            if (!btn) return;
+
+            // Task 1 link (you can change others later)
+            if (taskId === 1) {
+                window.open("https://t.me/dawhusquotex", "_blank");
+            } else {
+                window.open("https://t.me/dawhusquotex", "_blank"); // placeholder for task 2 & 3
+            }
             
             btn.disabled = true;
-            let timeLeft = 5;
+            let timeLeft = 10;
             btn.textContent = `Wait ${timeLeft}s...`;
             
             const interval = setInterval(() => {
@@ -501,7 +534,7 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    btn.textContent = "Claim ✅";
+                    btn.textContent = "Claim";
                     btn.onclick = () => claimTask(taskId);
                 }
             }, 1000);
@@ -509,12 +542,18 @@
 
         function claimTask(taskId) {
             balance += 59;
-            alert("✅ 59 $DHU Claimed Successfully!");
             updateUI();
+            alert("✅ 59 $DHU added to your balance!");
             
-            const btn = document.getElementById(`task-btn-${taskId}`);
-            btn.textContent = "Task Completed";
-            btn.disabled = true;
+            const taskElement = document.getElementById(`task-${taskId}`);
+            if (taskElement) {
+                taskElement.style.opacity = "0.4";
+                taskElement.style.pointerEvents = "none";
+                // Optional: fully remove after short delay
+                setTimeout(() => {
+                    taskElement.remove();
+                }, 800);
+            }
         }
 
         function switchTab(n) {
@@ -536,7 +575,7 @@
         updateUI();
         updateWalletButton();
         actionBtn.onclick = startMining;
-        switchTab(0); // Ensure we start on Home
+        switchTab(0);
     </script>
 </body>
-    </html>
+</html>
