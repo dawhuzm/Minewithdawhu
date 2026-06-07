@@ -23,15 +23,22 @@
             background: #1a1a1a;
             gap: 6px;
         }
+        .player, .balance, .wallet {
+            padding: 5px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
-            padding: 5px 10px;
-            border-radius: 50px;
             display: flex;
             align-items: center;
             gap: 6px;
-            font-weight: bold;
-            font-size: 14px;
             flex-shrink: 0;
         }
         .player-img {
@@ -44,24 +51,18 @@
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-            padding: 5px 18px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            white-space: nowrap;
             flex-grow: 1;
             max-width: 140px;
         }
         .wallet {
             background: #27272a;
-            padding: 5px 10px;
-            border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 14px;
+            gap: 6px;
             flex-shrink: 0;
+        }
+        .player:active, .balance:active, .wallet:active {
+            transform: scale(0.94);
         }
 
         .main {
@@ -170,16 +171,21 @@
     </style>
 </head>
 <body>
+    <!-- Top Bar -->
     <div class="top-bar">
-        <div id="player-info" class="player">
+        <div id="player-info" class="player" onclick="showPlayerInfo()">
             👤 <span id="player-name">Player</span>
         </div>
-        <div id="balance" class="balance">50.85 Dhu</div>
-        <div class="wallet">🔗 Wallet</div>
+        <div id="balance" class="balance" onclick="showBalanceInfo()">
+            50.85 Dhu
+        </div>
+        <div class="wallet" onclick="showWalletInfo()">
+            🔗 Wallet
+        </div>
     </div>
 
     <div class="main">
-        <div class="title">Mining $DHU ⛏️ <small></small></div>
+        <div class="title">Mining $Dawhu ⛏️ <small>(5 Hours)</small></div>
         
         <div class="progress-container">
             <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
@@ -237,29 +243,25 @@
         function startMining() {
             if (isMining) return;
             isMining = true;
-
             actionBtn.textContent = "MINING 5 HOURS...";
             actionBtn.disabled = true;
 
             let progress = 0;
-            const duration = 30000; // 30 seconds for demo (represents 5 hours)
+            const duration = 30000;
             const startTime = Date.now();
 
             progressInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 progress = Math.min((elapsed / duration) * 100, 100);
-
                 const offset = 615 * (1 - progress / 100);
                 progressRing.setAttribute('stroke-dashoffset', offset);
-
                 if (progress >= 100) finishMining();
             }, 50);
         }
 
         function finishMining() {
             clearInterval(progressInterval);
-            
-            mined = 99.99;           // Big reward after 5 hours
+            mined = 99.99;
             balance += 99.99;
 
             actionBtn.textContent = "CLAIM 99.99 $DHU";
@@ -272,14 +274,24 @@
 
         function claimReward() {
             alert("✅ 99.99 $DHU Claimed Successfully!");
-            
-            // Reset for next session
             mined = 0;
             actionBtn.textContent = "TAP TO START 5H MINING";
             actionBtn.onclick = startMining;
             progressRing.setAttribute('stroke-dashoffset', 615);
             isMining = false;
             updateUI();
+        }
+
+        function showBalanceInfo() {
+            alert("💰 Your Total Balance\n" + balance.toFixed(2) + " $DHU");
+        }
+
+        function showWalletInfo() {
+            alert("🔗 Wallet Connected\n\nYou can withdraw or manage your $DHU here soon!");
+        }
+
+        function showPlayerInfo() {
+            alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
         }
 
         function switchTab(n) {
