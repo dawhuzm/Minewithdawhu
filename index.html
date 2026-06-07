@@ -18,9 +18,15 @@
         .top-bar {
             padding: 8px 10px;
             display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+            gap: 6px;
+        }
+        .top-row {
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #1a1a1a;
+            width: 100%;
             gap: 6px;
         }
         .player, .wallet, .usdt-btn, .balance {
@@ -52,8 +58,6 @@
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-            flex-grow: 1;
-            max-width: 140px;
         }
         .wallet {
             background: #27272a;
@@ -258,19 +262,23 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar - Modified with 4 buttons -->
+    <!-- Top Bar - Only positioning modified -->
     <div class="top-bar">
-        <div id="player-info" class="player" onclick="showPlayerInfo()">
-            👤 <span id="player-name">Player</span>
+        <div class="top-row">
+            <div id="player-info" class="player" onclick="showPlayerInfo()">
+                👤 <span id="player-name">Player</span>
+            </div>
+            <div class="wallet" onclick="showWalletInfo()">
+                🔗 Wallet
+            </div>
         </div>
-        <div class="wallet" onclick="showWalletInfo()">
-            🔗 Wallet
-        </div>
-        <div id="balance" class="balance" onclick="showBalanceInfo()">
-            50.85 Dhu
-        </div>
-        <div class="usdt-btn" onclick="showUsdtInfo()">
-            💵 USDT
+        <div class="top-row">
+            <div id="balance" class="balance" onclick="showBalanceInfo()">
+                50.85 Dhu
+            </div>
+            <div class="usdt-btn" onclick="showUsdtInfo()">
+                💵 USDT
+            </div>
         </div>
     </div>
 
@@ -490,4 +498,4 @@
         updateUI();
     </script>
 </body>
-    </html>
+</html>
