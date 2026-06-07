@@ -76,85 +76,131 @@
             color: #e5e7eb;
         }
 
-        .progress-container, .invite-container, .settings-section {
-            padding: 20px;
+        .progress-container {
+            position: relative;
+            width: 240px;
+            height: 240px;
+            margin: 15px auto;
         }
-
         .progress-circle { transform: rotate(-90deg); }
-        .progress-bg { fill: none; stroke: #374151; stroke-width: 16; }
+        .progress-bg {
+            fill: none;
+            stroke: #374151;
+            stroke-width: 16;
+        }
         .progress-ring {
-            fill: none; stroke: #22d3ee; stroke-width: 16;
-            stroke-linecap: round; transition: stroke-dashoffset 0.08s linear;
+            fill: none;
+            stroke: #22d3ee;
+            stroke-width: 16;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.08s linear;
         }
         .center-circle {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 170px; height: 170px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 170px;
+            height: 170px;
             background: radial-gradient(circle, #1e40af, #111827);
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 44px; font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            font-weight: bold;
             box-shadow: 0 0 45px #22d3ee;
             border: 8px solid #10b981;
             pointer-events: none;
         }
 
-        .mined { font-size: 17px; margin: 12px 0 20px; color: #9ca3af; }
+        .mined {
+            font-size: 17px;
+            margin: 12px 0 20px;
+            color: #9ca3af;
+        }
 
         .action-btn {
             background: linear-gradient(90deg, #15803d, #4ade80);
-            color: black; font-size: 17px; font-weight: bold;
-            padding: 14px 40px; border-radius: 50px; border: none;
-            width: 88%; max-width: 300px; margin: 10px auto 25px;
-            box-shadow: 0 0 20px #4ade80; cursor: pointer;
+            color: black;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 14px 40px;
+            border-radius: 50px;
+            border: none;
+            width: 88%;
+            max-width: 300px;
+            margin: 10px auto 25px;
+            box-shadow: 0 0 20px #4ade80;
+            cursor: pointer;
         }
-        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #1a1a1a; display: flex;
-            padding: 8px 8px 12px; gap: 6px;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #1a1a1a;
+            display: flex;
+            padding: 8px 8px 12px;
+            gap: 6px;
         }
         .nav-item {
-            flex: 1; background: #27272a; border: 2px solid #4b5563;
-            border-radius: 14px; padding: 8px 4px 4px;
-            text-align: center; color: #d1d5db;
-            font-size: 10.5px; font-weight: 600;
+            flex: 1;
+            background: #27272a;
+            border: 2px solid #4b5563;
+            border-radius: 14px;
+            padding: 8px 4px 4px;
+            text-align: center;
+            color: #d1d5db;
+            font-size: 10.5px;
+            font-weight: 600;
         }
         .nav-item.active {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
-            color: white; border-color: #eab308;
+            color: white;
+            border-color: #eab308;
         }
-        .nav-icon { font-size: 24px; display: block; margin-bottom: 3px; }
+        .nav-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 3px;
+        }
 
-        /* Invite Section */
-        .invite-section {
-            display: none; padding: 30px 20px; text-align: center;
-        }
-        .invite-box {
-            background: #1a1a1a; padding: 25px; border-radius: 16px;
-            max-width: 320px; margin: 0 auto;
-        }
-        .invite-box h2 { margin-bottom: 15px; font-size: 24px; }
-        .referral-link {
-            background: #27272a; padding: 12px; border-radius: 12px;
-            font-family: monospace; word-break: break-all;
-            margin: 15px 0; font-size: 15px;
-        }
-        .btn {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
-            color: white; padding: 12px 24px; border: none;
-            border-radius: 50px; font-weight: bold; margin: 8px;
-            cursor: pointer; width: 100%; max-width: 260px;
-        }
-        .bonus { color: #4ade80; margin-top: 20px; font-size: 15px; }
-
-        /* Settings & Others */
+        /* Settings Section */
         .settings-section {
-            display: none; padding: 30px 20px; text-align: center;
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .settings-section h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
         }
         .contact-box {
-            background: #1a1a1a; padding: 25px; border-radius: 16px;
-            max-width: 280px; margin: 0 auto;
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .contact-box p {
+            margin-bottom: 12px;
+            color: #9ca3af;
+        }
+        .telegram-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .telegram-logo {
+            font-size: 32px;
         }
     </style>
 </head>
@@ -165,52 +211,37 @@
             👤 <span id="player-name">Player</span>
         </div>
         <div id="balance" class="balance" onclick="showBalanceInfo()">
-            250.83 Dhu
+            50.85 Dhu
         </div>
         <div class="wallet" onclick="showWalletInfo()">
             🔗 Wallet
         </div>
     </div>
 
-    <!-- HOME SECTION -->
+    <!-- HOME SECTION (Mining) -->
     <div id="home-section">
         <div class="main">
             <div class="title">Mining $Dawhu ⛏️ <small>(5 Hours)</small></div>
-            <div class="progress-container" style="position:relative; width:240px; height:240px; margin:15px auto;">
+            
+            <div class="progress-container">
                 <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
                     <circle class="progress-bg" cx="120" cy="120" r="98"/>
-                    <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98" stroke-dasharray="615" stroke-dashoffset="615"/>
+                    <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
+                        stroke-dasharray="615" stroke-dashoffset="615"/>
                 </svg>
                 <div class="center-circle">$DHU</div>
             </div>
-            <div class="mined">Mined: <span id="mined-amount">0.00</span> $DHU</div>
+            
+            <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
+            
             <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
-        </div>
-    </div>
-
-    <!-- INVITE SECTION -->
-    <div id="invite-section" class="invite-section">
-        <div class="invite-box">
-            <h2>🤑 Invite Friends</h2>
-            <p>Invite friends and earn <strong>50 $DHU</strong> per referral!</p>
-            
-            <div class="referral-link" id="referral-link">
-                https://t.me/DawhuBot?start=ref123456
-            </div>
-            
-            <button class="btn" onclick="copyReferralLink()">📋 Copy Link</button>
-            <button class="btn" onclick="shareReferralLink()">🔗 Share on Telegram</button>
-            
-            <div class="bonus">
-                👥 Friends Invited: <strong>0</strong><br>
-                💰 Bonus Earned: <strong>0 $DHU</strong>
-            </div>
         </div>
     </div>
 
     <!-- SETTINGS SECTION -->
     <div id="settings-section" class="settings-section">
         <h2>⚙️ Settings</h2>
+        
         <div class="contact-box">
             <p>For collaboration and inquiries:</p>
             <div class="telegram-contact">
@@ -246,15 +277,14 @@
             }
         }
 
-        let balance = 250.83;
-        let mined = 0.00;
+        let balance = 50.85;
+        let mined = 2.18;
         let isMining = false;
         let progressInterval = null;
 
         const progressRing = document.getElementById('progress-ring');
         const actionBtn = document.getElementById('action-btn');
         const homeSection = document.getElementById('home-section');
-        const inviteSection = document.getElementById('invite-section');
         const settingsSection = document.getElementById('settings-section');
 
         function updateUI() {
@@ -262,7 +292,7 @@
             document.getElementById('mined-amount').textContent = mined.toFixed(2);
         }
 
-        function startMining() { /* ... same as before ... */ 
+        function startMining() {
             if (isMining) return;
             isMining = true;
             actionBtn.textContent = "MINING 5 HOURS...";
@@ -281,18 +311,20 @@
             }, 50);
         }
 
-        function finishMining() { /* ... same ... */ 
+        function finishMining() {
             clearInterval(progressInterval);
             mined = 99.99;
             balance += 99.99;
+
             actionBtn.textContent = "CLAIM 99.99 $DHU";
             actionBtn.disabled = false;
             actionBtn.onclick = claimReward;
+
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
         }
 
-        function claimReward() { /* ... same ... */ 
+        function claimReward() {
             alert("✅ 99.99 $DHU Claimed Successfully!");
             mined = 0;
             actionBtn.textContent = "TAP TO START 5H MINING";
@@ -302,47 +334,40 @@
             updateUI();
         }
 
-        function copyReferralLink() {
-            const link = document.getElementById('referral-link').textContent.trim();
-            navigator.clipboard.writeText(link).then(() => {
-                alert("✅ Referral link copied!");
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            });
+        function showBalanceInfo() {
+            alert("💰 Your Total Balance\n" + balance.toFixed(2) + " $DHU");
         }
 
-        function shareReferralLink() {
-            const link = document.getElementById('referral-link').textContent.trim();
-            if (tg.shareURL) {
-                tg.shareURL(link, "Join me on Dawhucoin and start mining $DHU!");
-            } else {
-                alert("Share this link:\n" + link);
-            }
+        function showWalletInfo() {
+            alert("🔗 Wallet Connected\n\nYou can withdraw or manage your $DHU here soon!");
+        }
+
+        function showPlayerInfo() {
+            alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
         }
 
         function switchTab(n) {
-            document.querySelectorAll('.nav-item').forEach((item, i) => 
-                item.classList.toggle('active', i === n)
-            );
-
-            homeSection.style.display = 'none';
-            inviteSection.style.display = 'none';
-            settingsSection.style.display = 'none';
+            document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
 
             if (n === 0) {
+                // Show Home
                 homeSection.style.display = 'block';
-            } else if (n === 2) {
-                inviteSection.style.display = 'block';
-            } else if (n === 3) {
+                settingsSection.style.display = 'none';
+            } 
+            else if (n === 3) {
+                // Show Settings
+                homeSection.style.display = 'none';
                 settingsSection.style.display = 'block';
-            } else {
+            } 
+            else {
                 alert("This tab is coming soon!");
             }
         }
 
-        // Initialize
         actionBtn.onclick = startMining;
+
         loadUserInfo();
         updateUI();
     </script>
 </body>
-    </html>
+</html>
