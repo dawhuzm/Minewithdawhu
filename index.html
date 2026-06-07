@@ -48,7 +48,7 @@
             object-fit: cover;
             border: 2px solid #ddd;
         }
-        .wallet, .usdt-btn {
+        .wallet {
             background: #27272a;
             padding: 8px 18px;
             border-radius: 50px;
@@ -79,7 +79,7 @@
             transition: transform 0.1s;
             user-select: none;
         }
-        .player:active, .balance:active, .wallet:active, .usdt-btn:active {
+        .player:active, .balance:active, .wallet:active {
             transform: scale(0.94);
         }
 
@@ -279,7 +279,7 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar - Only this section modified -->
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-row">
             <div id="player-info" class="player" onclick="showPlayerInfo()">
@@ -295,9 +295,6 @@
         <div class="top-row">
             <div id="balance" class="balance" onclick="showBalanceInfo()">
                 50.85 Dhu
-            </div>
-            <div class="usdt-btn" onclick="showUsdtInfo()">
-                💵 USDT
             </div>
         </div>
     </div>
@@ -455,10 +452,6 @@
 
         function showPlayerInfo() {
             alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
-        }
-
-        function showUsdtInfo() {
-            alert("💵 USDT Balance\n\nComing soon!");
         }
 
         function copyReferralLink() {
