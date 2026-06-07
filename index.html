@@ -169,47 +169,38 @@
             margin-bottom: 3px;
         }
 
-        /* Settings Modal */
-        .modal {
+        /* Settings Section */
+        .settings-section {
             display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .settings-section h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
+        }
+        .contact-box {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .contact-box p {
+            margin-bottom: 12px;
+            color: #9ca3af;
+        }
+        .telegram-contact {
+            display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .modal-content {
-            background: #1a1a1a;
-            width: 90%;
-            max-width: 320px;
-            border-radius: 16px;
-            padding: 20px;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 18px;
+            gap: 12px;
+            font-size: 20px;
             font-weight: bold;
-        }
-        .close-btn {
-            background: none;
-            border: none;
             color: #fff;
-            font-size: 24px;
-            cursor: pointer;
         }
-        .setting-item {
-            padding: 14px 0;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .setting-item:last-child {
-            border-bottom: none;
+        .telegram-logo {
+            font-size: 32px;
         }
     </style>
 </head>
@@ -227,55 +218,45 @@
         </div>
     </div>
 
-    <div class="main">
-        <div class="title">Mining $Dawhu ⛏️ <small>(5 Hours)</small></div>
-        
-        <div class="progress-container">
-            <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
-                <circle class="progress-bg" cx="120" cy="120" r="98"/>
-                <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
-                    stroke-dasharray="615" stroke-dashoffset="615"/>
-            </svg>
-            <div class="center-circle">$DHU</div>
+    <!-- HOME SECTION (Mining) -->
+    <div id="home-section">
+        <div class="main">
+            <div class="title">Mining $Dawhu ⛏️ <small>(5 Hours)</small></div>
+            
+            <div class="progress-container">
+                <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
+                    <circle class="progress-bg" cx="120" cy="120" r="98"/>
+                    <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
+                        stroke-dasharray="615" stroke-dashoffset="615"/>
+                </svg>
+                <div class="center-circle">$DHU</div>
+            </div>
+            
+            <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
+            
+            <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
         </div>
+    </div>
+
+    <!-- SETTINGS SECTION -->
+    <div id="settings-section" class="settings-section">
+        <h2>⚙️ Settings</h2>
         
-        <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
-        
-        <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
+        <div class="contact-box">
+            <p>For collaboration and inquiries:</p>
+            <div class="telegram-contact">
+                <span class="telegram-logo">📱</span>
+                <span>@mawhu</span>
+            </div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab(0)"><span class="nav-icon">🏠</span>Home</div>
         <div class="nav-item" onclick="switchTab(1)"><span class="nav-icon">📋</span>Task</div>
         <div class="nav-item" onclick="switchTab(2)"><span class="nav-icon">🤑</span>Invite</div>
-        <div class="nav-item" onclick="openSettings()"><span class="nav-icon">⚙️</span>Settings</div>
+        <div class="nav-item" onclick="switchTab(3)"><span class="nav-icon">⚙️</span>Settings</div>
     </nav>
-
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>⚙️ Settings</span>
-                <button class="close-btn" onclick="closeSettings()">×</button>
-            </div>
-            <div class="setting-item">
-                <span>Vibration</span>
-                <button onclick="toggleVibration()">ON</button>
-            </div>
-            <div class="setting-item">
-                <span>Sound Effects</span>
-                <button onclick="toggleSound()">ON</button>
-            </div>
-            <div class="setting-item">
-                <span>Reset Progress</span>
-                <button onclick="resetProgress()" style="color: #ef4444;">Reset</button>
-            </div>
-            <div class="setting-item">
-                <span>About Dawhu Miner</span>
-                <button onclick="showAbout()">Info</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         const tg = window.Telegram.WebApp || {};
@@ -303,6 +284,8 @@
 
         const progressRing = document.getElementById('progress-ring');
         const actionBtn = document.getElementById('action-btn');
+        const homeSection = document.getElementById('home-section');
+        const settingsSection = document.getElementById('settings-section');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -365,37 +348,20 @@
 
         function switchTab(n) {
             document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
-            if (n !== 0 && n !== 3) alert("This tab is coming soon!");
-        }
 
-        // Settings Functions
-        function openSettings() {
-            document.getElementById('settings-modal').style.display = 'flex';
-            document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 3));
-        }
-
-        function closeSettings() {
-            document.getElementById('settings-modal').style.display = 'none';
-            document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === 0));
-        }
-
-        function toggleVibration() {
-            alert("Vibration toggled (demo)");
-        }
-
-        function toggleSound() {
-            alert("Sound effects toggled (demo)");
-        }
-
-        function resetProgress() {
-            if (confirm("Reset all mining progress?")) {
-                alert("Progress has been reset.");
-                closeSettings();
+            if (n === 0) {
+                // Show Home
+                homeSection.style.display = 'block';
+                settingsSection.style.display = 'none';
+            } 
+            else if (n === 3) {
+                // Show Settings
+                homeSection.style.display = 'none';
+                settingsSection.style.display = 'block';
+            } 
+            else {
+                alert("This tab is coming soon!");
             }
-        }
-
-        function showAbout() {
-            alert("Dawhu Miner v1.0\n\nTelegram Mini App");
         }
 
         actionBtn.onclick = startMining;
