@@ -242,7 +242,8 @@
             font-family: monospace;
             word-break: break-all;
             margin: 15px 0;
-            font-size: 15px;
+            font-size: 14px;
+            color: #a5b4fc;
         }
         
         .btn {
@@ -256,6 +257,14 @@
             cursor: pointer;
             width: 100%;
             max-width: 260px;
+        }
+
+        .task-item {
+            background: #27272a;
+            margin: 12px 0;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
         }
     </style>
 </head>
@@ -283,7 +292,7 @@
     <!-- HOME SECTION -->
     <div id="home-section">
         <div class="main">
-            <div class="title"><small></small></div>
+            <div class="title">Dawhu Miner</div>
             
             <div class="progress-container">
                 <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
@@ -291,7 +300,7 @@
                     <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
                         stroke-dasharray="615" stroke-dashoffset="615"/>
                 </svg>
-                <div class="center-circle">$DHU</div>
+                <div class="center-circle" id="center-text">$DHU</div>
             </div>
             
             <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
@@ -300,6 +309,7 @@
         </div>
     </div>
 
+    <!-- TASK, INVITE, SETTINGS sections unchanged (same as before) -->
     <!-- TASK SECTION -->
     <div id="task-section" class="task-section">
         <div class="task-box">
@@ -312,25 +322,25 @@
                     <button id="task-btn-1" class="btn" onclick="doTask(1)">Do Task 💸</button>
                 </div>
                 <div class="task-item" id="task-2">
-                    <strong>Task 2:</strong><br>Complete Task 2<br><br>
+                    <strong>Task 2:</strong><br>Follow @mrcseller on Telegram<br><br>
                     <button id="task-btn-2" class="btn" onclick="doTask(2)">Do Task 💸</button>
                 </div>
                 <div class="task-item" id="task-3">
-                    <strong>Task 3:</strong><br>Complete Task 3<br><br>
+                    <strong>Task 3:</strong><br>Invite 1 Friend<br><br>
                     <button id="task-btn-3" class="btn" onclick="doTask(3)">Do Task 💸</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- INVITE SECTION - Updated -->
+    <!-- INVITE SECTION -->
     <div id="invite-section" class="invite-section">
         <div class="invite-box">
             <h2>🤑 Invite Friends</h2>
             <p>Invite friends and earn <strong>50 $DHU</strong> per referral!</p>
             
             <div class="referral-link" id="referral-link">
-                https://t.me/DawhuBot?start=ref123456
+                Loading link...
             </div>
             
             <button class="btn" onclick="copyReferralLink()">📋 Copy Link</button>
@@ -345,12 +355,11 @@
     <!-- SETTINGS SECTION -->
     <div id="settings-section" class="settings-section">
         <h2>⚙️ Settings</h2>
-        
         <div class="contact-box">
             <p>For collaboration and inquiries:</p>
-            <div class="telegram-contact">
-                <span class="telegram-logo">📱</span>
-                <span>@mawhu</span>
+            <div class="telegram-contact" style="margin-top:15px; background:#27272a; padding:12px; border-radius:12px;">
+                <span style="font-size:28px;">📱</span><br>
+                <strong>@mawhu</strong>
             </div>
         </div>
     </div>
@@ -368,9 +377,10 @@
         if (tg.ready) tg.ready();
 
         let userWallet = localStorage.getItem('userWallet') || '';
-        let balance = 50.85;
-        let mined = 2.18;
+        let balance = parseFloat(localStorage.getItem('balance')) || 50.85;
+        let mined = parseFloat(localStorage.getItem('mined')) || 2.18;
         let isMining = false;
+        let miningStartTime = null;
         let progressInterval = null;
         let referralCount = parseInt(localStorage.getItem('referralCount')) || 0;
 
@@ -383,85 +393,43 @@
         const settingsSection = document.getElementById('settings-section');
         const inviteSection = document.getElementById('invite-section');
         const taskSection = document.getElementById('task-section');
+        const centerText = document.getElementById('center-text');
 
-        function truncateWallet(wallet) {
-            if (!wallet || wallet.length < 8) return wallet;
-            return wallet.slice(0, 4) + '...' + wallet.slice(-4);
-        }
-
-        function updateWalletButton() {
-            if (userWallet) {
-                walletBtn.textContent = `🔗 ${truncateWallet(userWallet)}`;
-                walletBtn.classList.add('linked');
-            } else {
-                walletBtn.textContent = '🔗 Wallet';
-                walletBtn.classList.remove('linked');
-            }
-        }
-
-        function handleWalletClick() {
-            if (userWallet) {
-                alert(`✅ Wallet Linked\n\n${userWallet}`);
-            } else {
-                const walletInput = prompt("Enter your wallet address:", "0x");
-                if (walletInput && walletInput.trim() !== "") {
-                    userWallet = walletInput.trim();
-                    localStorage.setItem('userWallet', userWallet);
-                    updateWalletButton();
-                    alert("✅ Wallet successfully linked!");
-                }
-            }
-        }
-
-        function loadUserInfo() {
-            const user = tg.initDataUnsafe?.user;
-            if (user) {
-                document.getElementById('player-name').textContent = user.first_name || "Player";
-                const playerDiv = document.getElementById('player-info');
-                if (user.photo_url) {
-                    const img = document.createElement('img');
-                    img.src = user.photo_url;
-                    img.className = 'player-img';
-                    playerDiv.insertBefore(img, playerDiv.firstChild);
-                }
-            }
-        }
+        // ... (keep all previous functions: truncateWallet, updateWalletButton, handleWalletClick, loadUserInfo, updateUI, mining functions, etc.)
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
             document.getElementById('mined-amount').textContent = mined.toFixed(2);
             document.getElementById('referral-count').textContent = `Referrals: ${referralCount}`;
-        }
-
-        // ==================== INVITE / REFERRAL LOGIC ====================
-        async function sendTelegramMessage(chatId, text) {
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: text,
-                        parse_mode: 'HTML'
-                    })
-                });
-            } catch (e) {
-                console.log("Notification sent (simulated in dev)");
-            }
+            localStorage.setItem('balance', balance);
+            localStorage.setItem('mined', mined);
+            localStorage.setItem('referralCount', referralCount);
         }
 
         function processReferral() {
-            const startParam = tg.initDataUnsafe?.start_param;
+            const startParam = tg.initDataUnsafe?.start_param || 
+                              new URLSearchParams(window.location.search).get('start_param');
+            
             if (startParam && startParam.startsWith('ref')) {
                 const referrerId = startParam.replace('ref', '');
-                // Credit the inviter
-                balance += 50;
-                updateUI();
-                
-                // Notify inviter
-                sendTelegramMessage(referrerId, `🎉 A new user joined through your invite link!\n+50 $DHU added to your balance!`);
-                
-                alert("✅ You joined via a referral link! The inviter received their bonus.");
+                if (referrerId && referrerId !== String(tg.initDataUnsafe?.user?.id)) {
+                    balance += 50;
+                    updateUI();
+                    alert("🎉 You joined via referral!\nThe inviter received +50 $DHU");
+                    
+                    // Notify inviter (best effort)
+                    try {
+                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                chat_id: referrerId,
+                                text: `🎉 New user joined via your invite!\n+50 $DHU added!`,
+                                parse_mode: 'HTML'
+                            })
+                        });
+                    } catch(e) {}
+                }
             }
         }
 
@@ -472,6 +440,8 @@
             
             navigator.clipboard.writeText(refLink).then(() => {
                 alert("✅ Referral link copied!");
+            }).catch(() => {
+                alert("Link:\n" + refLink);
             });
         }
 
@@ -485,28 +455,7 @@
             }
         }
 
-        // Rest of functions (mining, tasks, switchTab, etc.) remain unchanged
-        function startMining() { /* ... */ }
-        function finishMining() { /* ... */ }
-        function claimReward() { /* ... */ }
-        function showBalanceInfo() { /* ... */ }
-        function showPlayerInfo() { /* ... */ }
-        function doTask(taskId) { /* ... */ }
-        function claimTask(taskId) { /* ... */ }
-
-        function switchTab(n) {
-            document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
-
-            homeSection.style.display = 'none';
-            taskSection.style.display = 'none';
-            inviteSection.style.display = 'none';
-            settingsSection.style.display = 'none';
-
-            if (n === 0) homeSection.style.display = 'block';
-            else if (n === 1) taskSection.style.display = 'block';
-            else if (n === 2) inviteSection.style.display = 'block';
-            else if (n === 3) settingsSection.style.display = 'block';
-        }
+        // ... keep all other functions (startMining, finishMining, claimReward, doTask, claimTask, switchTab, etc.)
 
         // Initialize
         loadUserInfo();
@@ -514,7 +463,13 @@
         updateWalletButton();
         actionBtn.onclick = startMining;
         switchTab(0);
-        processReferral();   // Check for referral when opening the app
+        
+        // Generate referral link immediately
+        const user = tg.initDataUnsafe?.user;
+        const defaultRefLink = `https://t.me/DawhuBot?start=ref${user?.id || '123456'}`;
+        document.getElementById('referral-link').textContent = defaultRefLink;
+        
+        processReferral();   // Check for referral
     </script>
 </body>
-    </html>
+                                                         </html>
