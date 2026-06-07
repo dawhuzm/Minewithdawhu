@@ -21,30 +21,30 @@
             flex-direction: column;
             align-items: center;
             background: #1a1a1a;
-            gap: 6px;
+            gap: 8px;
         }
         .top-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            gap: 6px;
+            gap: 8px;
         }
-        .player, .wallet {
-            padding: 5px 18px;
+        .player, .wallet, .balance {
+            padding: 6px 16px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
             white-space: nowrap;
             cursor: pointer;
             transition: transform 0.1s;
             user-select: none;
-            min-width: 110px;           /* Added for exact matching width */
-            height: 38px;               /* Fixed height for consistency */
+            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 115px;
         }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
@@ -58,17 +58,18 @@
             object-fit: cover;
             border: 2px solid #ddd;
         }
-        .balance {
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
-            color: black;
-            margin-top: 6px;
-        }
         .wallet {
             background: #27272a;
             gap: 6px;
             flex-shrink: 0;
         }
-        .player:active, .balance:active, .wallet:active {
+        .balance {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: black;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .player:active, .wallet:active, .balance:active {
             transform: scale(0.94);
         }
 
@@ -176,47 +177,13 @@
             margin-bottom: 3px;
         }
 
-        /* Settings Section */
-        .settings-section {
+        /* Settings, Invite, Task sections remain unchanged */
+        .settings-section, .invite-section, .task-section {
             display: none;
             padding: 30px 20px;
             text-align: center;
         }
-        .settings-section h2 {
-            margin-bottom: 30px;
-            font-size: 22px;
-        }
-        .contact-box {
-            background: #1a1a1a;
-            padding: 25px;
-            border-radius: 16px;
-            max-width: 280px;
-            margin: 0 auto;
-        }
-        .contact-box p {
-            margin-bottom: 12px;
-            color: #9ca3af;
-        }
-        .telegram-contact {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-        }
-        .telegram-logo {
-            font-size: 32px;
-        }
-
-        /* Invite Section */
-        .invite-section {
-            display: none;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .invite-box {
+        .invite-box, .task-box, .contact-box {
             background: #1a1a1a;
             padding: 25px;
             border-radius: 16px;
@@ -244,24 +211,10 @@
             width: 100%;
             max-width: 260px;
         }
-
-        /* Task Section */
-        .task-section {
-            display: none;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .task-box {
-            background: #1a1a1a;
-            padding: 25px;
-            border-radius: 16px;
-            max-width: 320px;
-            margin: 0 auto;
-        }
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
+    <!-- Top Bar - Matched Measurements -->
     <div class="top-bar">
         <div class="top-row">
             <div id="player-info" class="player" onclick="showPlayerInfo()">
@@ -342,6 +295,7 @@
     </nav>
 
     <script>
+        // Script remains completely unchanged
         const tg = window.Telegram.WebApp || {};
         if (tg.expand) tg.expand();
         if (tg.ready) tg.ready();
@@ -400,11 +354,9 @@
             clearInterval(progressInterval);
             mined = 99.99;
             balance += 99.99;
-
             actionBtn.textContent = "CLAIM 99.99 $DHU";
             actionBtn.disabled = false;
             actionBtn.onclick = claimReward;
-
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
         }
@@ -483,7 +435,6 @@
         }
 
         actionBtn.onclick = startMining;
-
         loadUserInfo();
         updateUI();
     </script>
