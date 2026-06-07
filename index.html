@@ -18,33 +18,24 @@
         .top-bar {
             padding: 8px 10px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #1a1a1a;
-            gap: 8px;
-        }
-        .top-row {
-            display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
-            gap: 8px;
+            background: #1a1a1a;
+            gap: 6px;
         }
-        .player, .wallet, .balance {
-            padding: 6px 16px;
+        .player, .wallet, .usdt-btn, .balance {
+            padding: 5px 18px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 16px;
             text-align: center;
             white-space: nowrap;
             cursor: pointer;
             transition: transform 0.1s;
             user-select: none;
-            height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 115px;
         }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
@@ -58,18 +49,23 @@
             object-fit: cover;
             border: 2px solid #ddd;
         }
+        .balance {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: black;
+            flex-grow: 1;
+            max-width: 140px;
+        }
         .wallet {
             background: #27272a;
             gap: 6px;
             flex-shrink: 0;
         }
-        .balance {
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
-            color: black;
-            font-size: 16px;
-            font-weight: 700;
+        .usdt-btn {
+            background: #27272a;
+            gap: 6px;
+            flex-shrink: 0;
         }
-        .player:active, .wallet:active, .balance:active {
+        .player:active, .balance:active, .wallet:active, .usdt-btn:active {
             transform: scale(0.94);
         }
 
@@ -177,13 +173,47 @@
             margin-bottom: 3px;
         }
 
-        /* Settings, Invite, Task sections remain unchanged */
-        .settings-section, .invite-section, .task-section {
+        /* Settings Section */
+        .settings-section {
             display: none;
             padding: 30px 20px;
             text-align: center;
         }
-        .invite-box, .task-box, .contact-box {
+        .settings-section h2 {
+            margin-bottom: 30px;
+            font-size: 22px;
+        }
+        .contact-box {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .contact-box p {
+            margin-bottom: 12px;
+            color: #9ca3af;
+        }
+        .telegram-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .telegram-logo {
+            font-size: 32px;
+        }
+
+        /* Invite Section */
+        .invite-section {
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .invite-box {
             background: #1a1a1a;
             padding: 25px;
             border-radius: 16px;
@@ -211,21 +241,36 @@
             width: 100%;
             max-width: 260px;
         }
+
+        /* Task Section */
+        .task-section {
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .task-box {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
-    <!-- Top Bar - Matched Measurements -->
+    <!-- Top Bar - Modified with 4 buttons -->
     <div class="top-bar">
-        <div class="top-row">
-            <div id="player-info" class="player" onclick="showPlayerInfo()">
-                👤 <span id="player-name">Player</span>
-            </div>
-            <div class="wallet" onclick="showWalletInfo()">
-                🔗 Wallet
-            </div>
+        <div id="player-info" class="player" onclick="showPlayerInfo()">
+            👤 <span id="player-name">Player</span>
+        </div>
+        <div class="wallet" onclick="showWalletInfo()">
+            🔗 Wallet
         </div>
         <div id="balance" class="balance" onclick="showBalanceInfo()">
             50.85 Dhu
+        </div>
+        <div class="usdt-btn" onclick="showUsdtInfo()">
+            💵 USDT
         </div>
     </div>
 
@@ -295,7 +340,6 @@
     </nav>
 
     <script>
-        // Script remains completely unchanged
         const tg = window.Telegram.WebApp || {};
         if (tg.expand) tg.expand();
         if (tg.ready) tg.ready();
@@ -354,9 +398,11 @@
             clearInterval(progressInterval);
             mined = 99.99;
             balance += 99.99;
+
             actionBtn.textContent = "CLAIM 99.99 $DHU";
             actionBtn.disabled = false;
             actionBtn.onclick = claimReward;
+
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
         }
@@ -381,6 +427,10 @@
 
         function showPlayerInfo() {
             alert("👤 Welcome back, " + (document.getElementById('player-name').textContent) + "!");
+        }
+
+        function showUsdtInfo() {
+            alert("💵 USDT Balance\n\nComing soon!");
         }
 
         function copyReferralLink() {
@@ -435,8 +485,9 @@
         }
 
         actionBtn.onclick = startMining;
+
         loadUserInfo();
         updateUI();
     </script>
 </body>
-</html>
+    </html>
