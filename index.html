@@ -7,363 +7,180 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         html, body {
             background: #0f0f0f;
             min-height: 100vh;
-        }
-        
-        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: white;
-            padding-bottom: 85px;
-            overflow-x: hidden;
         }
-        
-        .top-bar {
-            padding: 8px 10px;
-            display: flex;
-            flex-direction: column;
-            background: transparent;
-            gap: 8px;
-        }
-        
-        .top-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            gap: 8px;
-        }
+        body { padding-bottom: 110px; overflow-x: hidden; }
+
+        .top-bar { padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+        .top-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
             padding: 6px 12px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 15px;
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-shrink: 0;
-            min-width: 160px;
         }
-        
-        .player-img {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ddd;
-        }
-        
-        .wallet {
-            background: #27272a;
+        .player-img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
+
+        .wallet, .balance {
             padding: 8px 28px;
             border-radius: 50px;
             font-weight: bold;
             font-size: 16px;
             text-align: center;
-            white-space: nowrap;
             cursor: pointer;
             transition: transform 0.1s;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            flex-shrink: 0;
-            border: 2px solid #3b82f6;
-            min-width: 140px;
         }
-        
-        .wallet.linked {
-            background: linear-gradient(135deg, #15803d, #4ade80);
-            color: black;
-            border-color: #4ade80;
-        }
-        
-        .balance {
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
-            color: black;
-            padding: 8px 28px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: transform 0.1s;
-            user-select: none;
-            min-width: 140px;
-        }
-        
-        .player:active, .balance:active, .wallet:active {
-            transform: scale(0.94);
-        }
+        .wallet { background: #27272a; border: 2px solid #3b82f6; }
+        .wallet.linked { background: linear-gradient(135deg, #15803d, #4ade80); color: black; border-color: #4ade80; }
+        .balance { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: black; }
 
-        .separator {
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 2px 0;
-        }
+        .main { text-align: center; padding: 15px 20px 10px; }
+        .title { font-size: 22px; font-weight: bold; margin-bottom: 18px; }
 
-        .main {
-            text-align: center;
-            padding: 15px 20px 10px;
-        }
-        
-        .title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 18px;
-            color: #e5e7eb;
-        }
-
-        .progress-container {
-            position: relative;
-            width: 240px;
-            height: 240px;
-            margin: 15px auto;
-        }
-        
+        .progress-container { position: relative; width: 240px; height: 240px; margin: 15px auto; }
         .progress-circle { transform: rotate(-90deg); }
-        
-        .progress-bg {
-            fill: none;
-            stroke: #374151;
-            stroke-width: 16;
-        }
-        
-        .progress-ring {
-            fill: none;
-            stroke: #22d3ee;
-            stroke-width: 16;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.08s linear;
-        }
+        .progress-bg { fill: none; stroke: #374151; stroke-width: 16; }
+        .progress-ring { fill: none; stroke: #22d3ee; stroke-width: 16; stroke-linecap: round; transition: stroke-dashoffset 0.08s linear; }
         
         .center-circle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 170px;
-            height: 170px;
-            background: radial-gradient(circle, #1e40af, #111827);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 44px;
-            font-weight: bold;
-            box-shadow: 0 0 45px #22d3ee;
-            border: 8px solid #10b981;
-            pointer-events: none;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 170px; height: 170px; background: radial-gradient(circle, #1e40af, #111827);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 44px; font-weight: bold; box-shadow: 0 0 45px #22d3ee; border: 8px solid #10b981;
         }
 
-        .mined {
-            font-size: 17px;
-            margin: 12px 0 20px;
-            color: #9ca3af;
-        }
-
+        .mined { font-size: 17px; margin: 12px 0 20px; color: #9ca3af; }
+        
         .action-btn {
             background: linear-gradient(90deg, #15803d, #4ade80);
-            color: black;
-            font-size: 17px;
-            font-weight: bold;
-            padding: 14px 40px;
-            border-radius: 50px;
-            border: none;
-            width: 88%;
-            max-width: 300px;
-            margin: 10px auto 25px;
-            box-shadow: 0 0 20px #4ade80;
-            cursor: pointer;
-        }
-        
-        .action-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            color: black; font-size: 17px; font-weight: bold;
+            padding: 14px 40px; border-radius: 50px; border: none;
+            width: 88%; max-width: 300px; margin: 10px auto 25px;
+            box-shadow: 0 0 20px #4ade80; cursor: pointer;
         }
 
+        /* Bigger Bottom Nav */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: #1a1a1a;
-            display: flex;
-            padding: 8px 8px 12px;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #1a1a1a; 
+            display: flex; 
+            padding: 12px 8px 18px;
             gap: 6px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
         }
-        
         .nav-item {
-            flex: 1;
-            background: #27272a;
+            flex: 1; 
+            background: #27272a; 
             border: 2px solid #4b5563;
-            border-radius: 14px;
-            padding: 8px 4px 4px;
+            border-radius: 16px; 
+            padding: 12px 4px 8px;
             text-align: center;
-            color: #d1d5db;
-            font-size: 10.5px;
+            color: #d1d5db; 
+            font-size: 12px;
             font-weight: 600;
+            transition: all 0.2s;
         }
-        
         .nav-item.active {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
-            color: white;
+            color: white; 
             border-color: #eab308;
+            transform: scale(1.05);
         }
-        
         .nav-icon {
-            font-size: 24px;
+            font-size: 32px;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
-        .settings-section, .invite-section, .task-section {
-            display: none;
-            padding: 30px 20px;
-            text-align: center;
+        .section { display: none; padding: 30px 20px; text-align: center; }
+        .invite-box, .task-box, .contact-box {
+            background: #27272a; padding: 25px; border-radius: 16px; max-width: 320px; margin: 0 auto;
         }
-        
-        .contact-box, .invite-box, .task-box {
-            background: transparent;
-            padding: 25px;
-            border-radius: 16px;
-            max-width: 320px;
-            margin: 0 auto;
-        }
-        
         .referral-link {
-            background: #27272a;
-            padding: 12px;
-            border-radius: 12px;
-            font-family: monospace;
-            word-break: break-all;
-            margin: 15px 0;
-            font-size: 14px;
-            color: #a5b4fc;
+            background: #1f2937; padding: 12px; border-radius: 12px;
+            font-family: monospace; word-break: break-all; margin: 15px 0; font-size: 13.5px;
         }
-        
         .btn {
             background: linear-gradient(90deg, #3b82f6, #60a5fa);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            margin: 8px;
-            cursor: pointer;
-            width: 100%;
-            max-width: 260px;
+            color: white; padding: 12px 24px; border: none; border-radius: 50px;
+            font-weight: bold; margin: 8px; cursor: pointer; width: 100%;
         }
-
-        .task-item {
-            background: #27272a;
-            margin: 12px 0;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: left;
-        }
+        .task-item { background: #27272a; margin: 12px 0; padding: 16px; border-radius: 12px; text-align: left; }
     </style>
 </head>
 <body>
+
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-row">
-            <div id="player-info" class="player" onclick="showPlayerInfo()">
+            <div id="player-info" class="player">
                 👤 <span id="player-name">Player</span>
             </div>
-            <div id="wallet-btn" class="wallet" onclick="handleWalletClick()">
-                🔗 Wallet
-            </div>
+            <div id="wallet-btn" class="wallet" onclick="handleWalletClick()">🔗 Wallet</div>
         </div>
-        
-        <div class="separator"></div>
-        
+        <div class="separator" style="height:1px;background:rgba(255,255,255,0.1);margin:2px 0;"></div>
         <div class="top-row">
-            <div id="balance" class="balance" onclick="showBalanceInfo()">
-                50.85 Dhu
-            </div>
+            <div id="balance" class="balance">50.85 Dhu</div>
         </div>
     </div>
 
-    <!-- HOME SECTION -->
-    <div id="home-section">
+    <!-- HOME -->
+    <div id="home-section" class="section" style="display:block;">
         <div class="main">
             <div class="title">Dawhu Miner</div>
-            
             <div class="progress-container">
                 <svg class="progress-circle" width="240" height="240" viewBox="0 0 240 240">
                     <circle class="progress-bg" cx="120" cy="120" r="98"/>
-                    <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98"
-                        stroke-dasharray="615" stroke-dashoffset="615"/>
+                    <circle id="progress-ring" class="progress-ring" cx="120" cy="120" r="98" stroke-dasharray="615" stroke-dashoffset="615"/>
                 </svg>
                 <div class="center-circle" id="center-text">$DHU</div>
             </div>
-            
             <div class="mined">Mined: <span id="mined-amount">2.18</span> $DHU</div>
-            
             <button id="action-btn" class="action-btn">TAP TO START 5H MINING</button>
         </div>
     </div>
 
-    <!-- TASK, INVITE, SETTINGS sections unchanged (same as before) -->
-    <!-- TASK SECTION -->
-    <div id="task-section" class="task-section">
+    <!-- TASK -->
+    <div id="task-section" class="section">
         <div class="task-box">
-            <h2>Welcome to Tasks Section</h2>
-            <p style="color: #4ade80; font-weight: bold; margin: 15px 0;">3 Tasks Available</p>
-            
-            <div id="tasks-container">
-                <div class="task-item" id="task-1">
-                    <strong>Task 1:</strong><br>Join Dawhu Squad<br><br>
-                    <button id="task-btn-1" class="btn" onclick="doTask(1)">Do Task 💸</button>
-                </div>
-                <div class="task-item" id="task-2">
-                    <strong>Task 2:</strong><br>Follow @mrcseller on Telegram<br><br>
-                    <button id="task-btn-2" class="btn" onclick="doTask(2)">Do Task 💸</button>
-                </div>
-                <div class="task-item" id="task-3">
-                    <strong>Task 3:</strong><br>Invite 1 Friend<br><br>
-                    <button id="task-btn-3" class="btn" onclick="doTask(3)">Do Task 💸</button>
-                </div>
-            </div>
+            <h2>Tasks</h2>
+            <p style="color:#4ade80;font-weight:bold;">3 Tasks Available</p>
+            <div class="task-item"><strong>Task 1:</strong> Join Dawhu Squad<br><button class="btn" onclick="doTask(1)">Do Task 💸</button></div>
+            <div class="task-item"><strong>Task 2:</strong> Follow @mrcseller<br><button class="btn" onclick="doTask(2)">Do Task 💸</button></div>
+            <div class="task-item"><strong>Task 3:</strong> Invite 1 Friend<br><button class="btn" onclick="doTask(3)">Do Task 💸</button></div>
         </div>
     </div>
 
-    <!-- INVITE SECTION -->
-    <div id="invite-section" class="invite-section">
+    <!-- INVITE (Simple placeholder - reset) -->
+    <div id="invite-section" class="section">
         <div class="invite-box">
             <h2>🤑 Invite Friends</h2>
             <p>Invite friends and earn <strong>50 $DHU</strong> per referral!</p>
-            
-            <div class="referral-link" id="referral-link">
-                Loading link...
-            </div>
-            
+            <div class="referral-link" id="referral-link">https://t.me/Dawhucoinbot?start=refYOURID</div>
             <button class="btn" onclick="copyReferralLink()">📋 Copy Link</button>
-            <button class="btn" onclick="shareReferralLink()">🔗 Share on Telegram</button>
-            
-            <p id="referral-count" style="margin-top: 20px; color: #4ade80; font-weight: bold;">
-                Referrals: 0
-            </p>
+            <button class="btn" onclick="shareReferralLink()">🔗 Share</button>
+            <p id="referral-count" style="margin-top:20px;color:#4ade80;">Referrals: 0</p>
         </div>
     </div>
 
-    <!-- SETTINGS SECTION -->
-    <div id="settings-section" class="settings-section">
-        <h2>⚙️ Settings</h2>
+    <!-- SETTINGS -->
+    <div id="settings-section" class="section">
         <div class="contact-box">
+            <h2>⚙️ Settings</h2>
             <p>For collaboration and inquiries:</p>
-            <div class="telegram-contact" style="margin-top:15px; background:#27272a; padding:12px; border-radius:12px;">
-                <span style="font-size:28px;">📱</span><br>
-                <strong>@mawhu</strong>
-            </div>
+            <strong>@mawhu</strong>
         </div>
     </div>
 
+    <!-- Bottom Nav (Bigger) -->
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab(0)"><span class="nav-icon">🏠</span>Home</div>
         <div class="nav-item" onclick="switchTab(1)"><span class="nav-icon">📋</span>Task</div>
@@ -373,103 +190,68 @@
 
     <script>
         const tg = window.Telegram.WebApp || {};
-        if (tg.expand) tg.expand();
-        if (tg.ready) tg.ready();
+        tg.expand?.();
+        tg.ready?.();
 
+        let balance = 50.85;
+        let mined = 2.18;
+        let referralCount = 0;
         let userWallet = localStorage.getItem('userWallet') || '';
-        let balance = parseFloat(localStorage.getItem('balance')) || 50.85;
-        let mined = parseFloat(localStorage.getItem('mined')) || 2.18;
-        let isMining = false;
-        let miningStartTime = null;
-        let progressInterval = null;
-        let referralCount = parseInt(localStorage.getItem('referralCount')) || 0;
-
-        const BOT_TOKEN = "8974021303:AAFl_ic6z50DdpcTvSILVHUDpy7rXmBMoec";
-
-        const progressRing = document.getElementById('progress-ring');
-        const actionBtn = document.getElementById('action-btn');
-        const walletBtn = document.getElementById('wallet-btn');
-        const homeSection = document.getElementById('home-section');
-        const settingsSection = document.getElementById('settings-section');
-        const inviteSection = document.getElementById('invite-section');
-        const taskSection = document.getElementById('task-section');
-        const centerText = document.getElementById('center-text');
-
-        // ... (keep all previous functions: truncateWallet, updateWalletButton, handleWalletClick, loadUserInfo, updateUI, mining functions, etc.)
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
             document.getElementById('mined-amount').textContent = mined.toFixed(2);
             document.getElementById('referral-count').textContent = `Referrals: ${referralCount}`;
-            localStorage.setItem('balance', balance);
-            localStorage.setItem('mined', mined);
-            localStorage.setItem('referralCount', referralCount);
         }
 
-        function processReferral() {
-            const startParam = tg.initDataUnsafe?.start_param || 
-                              new URLSearchParams(window.location.search).get('start_param');
-            
-            if (startParam && startParam.startsWith('ref')) {
-                const referrerId = startParam.replace('ref', '');
-                if (referrerId && referrerId !== String(tg.initDataUnsafe?.user?.id)) {
-                    balance += 50;
-                    updateUI();
-                    alert("🎉 You joined via referral!\nThe inviter received +50 $DHU");
-                    
-                    // Notify inviter (best effort)
-                    try {
-                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                chat_id: referrerId,
-                                text: `🎉 New user joined via your invite!\n+50 $DHU added!`,
-                                parse_mode: 'HTML'
-                            })
-                        });
-                    } catch(e) {}
+        function loadUserInfo() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('player-name').textContent = user.first_name || "Player";
+            }
+        }
+
+        function handleWalletClick() {
+            if (userWallet) {
+                alert(`✅ Wallet Linked\n\n${userWallet}`);
+            } else {
+                const input = prompt("Enter your wallet address:", "0x");
+                if (input) {
+                    userWallet = input.trim();
+                    localStorage.setItem('userWallet', userWallet);
+                    alert("✅ Wallet linked!");
                 }
             }
         }
 
-        function copyReferralLink() {
+        function getReferralLink() {
             const user = tg.initDataUnsafe?.user;
-            const refLink = `https://t.me/DawhuBot?start=ref${user?.id || '123456'}`;
-            document.getElementById('referral-link').textContent = refLink;
-            
-            navigator.clipboard.writeText(refLink).then(() => {
-                alert("✅ Referral link copied!");
-            }).catch(() => {
-                alert("Link:\n" + refLink);
-            });
+            return `https://t.me/Dawhucoinbot?start=ref${user?.id || '123456'}`;
+        }
+
+        function copyReferralLink() {
+            const link = getReferralLink();
+            document.getElementById('referral-link').textContent = link;
+            navigator.clipboard.writeText(link).then(() => alert("✅ Copied!")).catch(() => alert(link));
         }
 
         function shareReferralLink() {
-            const user = tg.initDataUnsafe?.user;
-            const refLink = `https://t.me/DawhuBot?start=ref${user?.id || '123456'}`;
-            if (tg.shareURL) {
-                tg.shareURL(refLink, "Join me on Dawhucoin and start mining $DHU! 🚀");
-            } else {
-                alert("Share this link:\n" + refLink);
-            }
+            const link = getReferralLink();
+            tg.shareURL ? tg.shareURL(link, "Join Dawhu Miner!") : alert(link);
         }
 
-        // ... keep all other functions (startMining, finishMining, claimReward, doTask, claimTask, switchTab, etc.)
+        function switchTab(n) {
+            document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === n));
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            const sections = ['home','task','invite','settings'];
+            document.getElementById(sections[n] + '-section').style.display = 'block';
+        }
 
-        // Initialize
+        // Init
         loadUserInfo();
         updateUI();
-        updateWalletButton();
-        actionBtn.onclick = startMining;
+        document.getElementById('referral-link').textContent = getReferralLink();
         switchTab(0);
-        
-        // Generate referral link immediately
-        const user = tg.initDataUnsafe?.user;
-        const defaultRefLink = `https://t.me/DawhuBot?start=ref${user?.id || '123456'}`;
-        document.getElementById('referral-link').textContent = defaultRefLink;
-        
-        processReferral();   // Check for referral
     </script>
 </body>
 </html>
