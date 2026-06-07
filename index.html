@@ -13,7 +13,6 @@
             color: white;
             min-height: 100vh;
             padding-bottom: 80px;
-            overflow-x: hidden;
         }
         .top-bar {
             padding: 12px 16px;
@@ -58,25 +57,47 @@
             margin-bottom: 20px;
             color: #e0e7ff;
         }
-        .mine-circle {
+
+        /* Circular Progress */
+        .progress-container {
+            position: relative;
             width: 260px;
             height: 260px;
             margin: 20px auto;
+        }
+        .progress-circle {
+            transform: rotate(-90deg);
+        }
+        .progress-bg {
+            fill: none;
+            stroke: #1e3a8a;
+            stroke-width: 18;
+        }
+        .progress-ring {
+            fill: none;
+            stroke: #22d3ee;
+            stroke-width: 18;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 190px;
+            height: 190px;
             background: radial-gradient(circle, #3b82f6, #1e40af);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 52px;
+            font-size: 48px;
             font-weight: bold;
-            box-shadow: 0 0 60px #22d3ee,
-                        0 0 120px rgba(34, 211, 238, 0.6);
-            border: 12px solid #10b981;
-            transition: all 0.1s;
+            box-shadow: 0 0 50px #22d3ee;
+            border: 8px solid #10b981;
+            cursor: pointer;
             user-select: none;
-        }
-        .mine-circle:active {
-            transform: scale(0.92);
         }
 
         .mined {
@@ -113,9 +134,7 @@
             font-size: 11px;
             font-weight: 600;
         }
-        .nav-item.active {
-            color: #facc15;
-        }
+        .nav-item.active { color: #facc15; }
         .nav-icon {
             font-size: 26px;
             display: block;
@@ -126,43 +145,34 @@
 <body>
     <!-- Top Bar -->
     <div class="top-bar">
-        <div class="player">
-            👤 Player
-        </div>
+        <div class="player">👤 Player</div>
         <div id="balance" class="balance">39.09 Dhu</div>
-        <div class="wallet">
-            💼 Wallet
-        </div>
+        <div class="wallet">💼 Wallet</div>
     </div>
 
     <div class="main">
         <div class="title">Mining $Dawhu ⛏️</div>
         
-        <div id="mine-button" class="mine-circle">$DHU</div>
+        <div class="progress-container">
+            <svg class="progress-circle" width="260" height="260" viewBox="0 0 260 260">
+                <circle class="progress-bg" cx="130" cy="130" r="106"/>
+                <circle id="progress-ring" class="progress-ring" cx="130" cy="130" r="106"
+                    stroke-dasharray="665" stroke-dashoffset="665"/>
+            </svg>
+            <div id="mine-button" class="center-circle">$DHU</div>
+        </div>
         
-        <div class="mined">Mined: <span id="mined-amount">2.25</span> $DHU</div>
+        <div class="mined">Mined: <span id="mined-amount">2.55</span> $DHU</div>
         
         <button onclick="claimReward()" class="claim-btn">CLAIM REWARD</button>
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-item active">
-            <span class="nav-icon">🏠</span>
-            HOME
-        </div>
-        <div class="nav-item">
-            <span class="nav-icon">📋</span>
-            TASKS
-        </div>
-        <div class="nav-item">
-            <span class="nav-icon">👥</span>
-            INVITE
-        </div>
-        <div class="nav-item">
-            <span class="nav-icon">👤</span>
-            PROFILE
-        </div>
+        <div class="nav-item active"><span class="nav-icon">🏠</span>HOME</div>
+        <div class="nav-item"><span class="nav-icon">📋</span>TASKS</div>
+        <div class="nav-item"><span class="nav-icon">👥</span>INVITE</div>
+        <div class="nav-item"><span class="nav-icon">👤</span>PROFILE</div>
     </nav>
 
     <script>
@@ -171,46 +181,69 @@
         if (tg.ready) tg.ready();
 
         let balance = 39.09;
-        let mined = 2.25;
+        let mined = 2.55;
+        let isMining = false;
+        let progressInterval = null;
+
+        const progressRing = document.getElementById('progress-ring');
+        const mineButton = document.getElementById('mine-button');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
             document.getElementById('mined-amount').textContent = mined.toFixed(2);
         }
 
-        function mine() {
-            mined += 0.15 + Math.random() * 0.1;
-            balance += 0.08;
-            
-            const btn = document.getElementById('mine-button');
-            btn.style.transform = 'scale(0.88)';
-            setTimeout(() => btn.style.transform = '', 120);
+        function startMining() {
+            if (isMining) return;
+            isMining = true;
 
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            let progress = 0;
+            const duration = 2800; // 2.8 seconds mining time
+            const startTime = Date.now();
+
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                progress = Math.min((elapsed / duration) * 100, 100);
+
+                // Update progress circle
+                const offset = 665 * (1 - progress / 100);
+                progressRing.setAttribute('stroke-dashoffset', offset);
+
+                if (progress >= 100) {
+                    finishMining();
+                }
+            }, 30);
+        }
+
+        function finishMining() {
+            clearInterval(progressInterval);
+            mined += 1.2 + Math.random() * 0.6;
+            balance += 0.4;
+
+            // Reset progress
+            setTimeout(() => {
+                progressRing.setAttribute('stroke-dashoffset', 665);
+                isMining = false;
+            }, 400);
+
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
         }
 
-        function claimReward() {
-            if (mined > 0) {
-                balance += mined;
-                mined = 0;
-                alert("✅ Reward Claimed!");
-                updateUI();
-            }
-        }
-
-        // Mining button
-        document.getElementById('mine-button').addEventListener('click', mine);
-        document.getElementById('mine-button').addEventListener('touchstart', e => {
+        // Tap to start mining
+        mineButton.addEventListener('click', startMining);
+        mineButton.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            mine();
+            startMining();
         });
 
-        // Auto mining
+        // Auto passive mining
         setInterval(() => {
-            mined += 0.03;
-            updateUI();
-        }, 1200);
+            if (!isMining) {
+                mined += 0.02;
+                updateUI();
+            }
+        }, 1500);
 
         updateUI();
     </script>
