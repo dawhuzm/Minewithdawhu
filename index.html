@@ -58,16 +58,13 @@
             color: #e0e7ff;
         }
 
-        /* Circular Progress */
         .progress-container {
             position: relative;
             width: 260px;
             height: 260px;
             margin: 20px auto;
         }
-        .progress-circle {
-            transform: rotate(-90deg);
-        }
+        .progress-circle { transform: rotate(-90deg); }
         .progress-bg {
             fill: none;
             stroke: #1e3a8a;
@@ -78,7 +75,7 @@
             stroke: #22d3ee;
             stroke-width: 18;
             stroke-linecap: round;
-            transition: stroke-dashoffset 0.1s linear;
+            transition: stroke-dashoffset 0.05s linear;
         }
         .center-circle {
             position: absolute;
@@ -96,16 +93,10 @@
             font-weight: bold;
             box-shadow: 0 0 50px #22d3ee;
             border: 8px solid #10b981;
-            user-select: none;
-            pointer-events: none; /* No longer clickable */
+            pointer-events: none;
         }
 
-        .mined {
-            font-size: 18px;
-            margin: 15px 0;
-            color: #a5b4fc;
-        }
-        .claim-btn {
+        .action-btn {
             background: linear-gradient(90deg, #10b981, #34d399);
             color: black;
             font-size: 18px;
@@ -117,16 +108,17 @@
             max-width: 320px;
             margin: 20px auto;
             box-shadow: 0 0 25px #34d399;
-        }
-        .tap-area {
-            margin: 20px auto;
-            padding: 14px 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50px;
-            font-size: 17px;
-            font-weight: bold;
-            width: fit-content;
             cursor: pointer;
+        }
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .mined {
+            font-size: 18px;
+            margin: 15px 0;
+            color: #a5b4fc;
         }
 
         .bottom-nav {
@@ -156,7 +148,7 @@
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="player">👤 Player</div>
-        <div id="balance" class="balance">39.09 Dhu</div>
+        <div id="balance" class="balance">45.73 Dhu</div>
         <div class="wallet">💼 Wallet</div>
     </div>
 
@@ -172,11 +164,9 @@
             <div class="center-circle">$DHU</div>
         </div>
         
-        <div onclick="startMining()" class="tap-area">TAP TO START MINING</div>
+        <button id="action-btn" class="action-btn">TAP TO START MINING</button>
         
-        <div class="mined">Mined: <span id="mined-amount">2.55</span> $DHU</div>
-        
-        <button onclick="claimReward()" class="claim-btn">CLAIM REWARD</button>
+        <div class="mined">Mined: <span id="mined-amount">0.15</span> $DHU</div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -192,12 +182,13 @@
         if (tg.expand) tg.expand();
         if (tg.ready) tg.ready();
 
-        let balance = 39.09;
-        let mined = 2.55;
+        let balance = 45.73;
+        let mined = 0.15;
         let isMining = false;
         let progressInterval = null;
 
         const progressRing = document.getElementById('progress-ring');
+        const actionBtn = document.getElementById('action-btn');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -208,8 +199,11 @@
             if (isMining) return;
             isMining = true;
 
+            actionBtn.textContent = "MINING...";
+            actionBtn.disabled = true;
+
             let progress = 0;
-            const duration = 3000; // 3 seconds per mining cycle
+            const duration = 3000; // 3 seconds
             const startTime = Date.now();
 
             progressInterval = setInterval(() => {
@@ -227,13 +221,14 @@
 
         function finishMining() {
             clearInterval(progressInterval);
-            mined += 1.15 + Math.random() * 0.7;
+            
+            mined += 1.2 + Math.random() * 0.8;
             balance += 0.45;
 
-            setTimeout(() => {
-                progressRing.setAttribute('stroke-dashoffset', 665);
-                isMining = false;
-            }, 500);
+            // Change button to Claim Reward
+            actionBtn.textContent = "CLAIM REWARD";
+            actionBtn.disabled = false;
+            actionBtn.onclick = claimReward;
 
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
             updateUI();
@@ -243,15 +238,28 @@
             if (mined > 0) {
                 balance += mined;
                 mined = 0;
+
                 alert("✅ Reward Claimed Successfully!");
+                
+                // Reset button to Start Mining
+                actionBtn.textContent = "TAP TO START MINING";
+                actionBtn.onclick = startMining;
+                
+                // Reset progress ring
+                progressRing.setAttribute('stroke-dashoffset', 665);
+                isMining = false;
+                
                 updateUI();
             }
         }
 
-        // Auto passive mining
+        // Initial button setup
+        actionBtn.onclick = startMining;
+
+        // Passive mining
         setInterval(() => {
             if (!isMining) {
-                mined += 0.025;
+                mined += 0.02;
                 updateUI();
             }
         }, 1400);
