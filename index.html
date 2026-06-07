@@ -18,9 +18,16 @@
         .top-bar {
             padding: 8px 10px;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #1a1a1a;
+            gap: 6px;
+        }
+        .top-row {
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #1a1a1a;
+            width: 100%;
             gap: 6px;
         }
         .player, .balance, .wallet {
@@ -51,8 +58,7 @@
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-            flex-grow: 1;
-            max-width: 140px;
+            margin-top: 6px;
         }
         .wallet {
             background: #27272a;
@@ -238,7 +244,7 @@
             max-width: 260px;
         }
 
-        /* Task Section - Added */
+        /* Task Section */
         .task-section {
             display: none;
             padding: 30px 20px;
@@ -254,16 +260,18 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
+    <!-- Top Bar - Updated Layout -->
     <div class="top-bar">
-        <div id="player-info" class="player" onclick="showPlayerInfo()">
-            👤 <span id="player-name">Player</span>
+        <div class="top-row">
+            <div id="player-info" class="player" onclick="showPlayerInfo()">
+                👤 <span id="player-name">Player</span>
+            </div>
+            <div class="wallet" onclick="showWalletInfo()">
+                🔗 Wallet
+            </div>
         </div>
         <div id="balance" class="balance" onclick="showBalanceInfo()">
             50.85 Dhu
-        </div>
-        <div class="wallet" onclick="showWalletInfo()">
-            🔗 Wallet
         </div>
     </div>
 
@@ -361,7 +369,7 @@
         const homeSection = document.getElementById('home-section');
         const settingsSection = document.getElementById('settings-section');
         const inviteSection = document.getElementById('invite-section');
-        const taskSection = document.getElementById('task-section');  /* Added */
+        const taskSection = document.getElementById('task-section');
 
         function updateUI() {
             document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
@@ -479,4 +487,4 @@
         updateUI();
     </script>
 </body>
-    </html>
+</html>
