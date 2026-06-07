@@ -15,26 +15,27 @@
             padding-bottom: 85px;
         }
         .top-bar {
-            padding: 12px 16px;
+            padding: 10px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #1a1a1a;
-            gap: 8px;
+            gap: 6px;
         }
         .player {
             background: linear-gradient(135deg, #6b21a8, #a855f7);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-weight: bold;
+            font-size: 15px;
             flex-shrink: 0;
         }
         .player-img {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ddd;
@@ -42,21 +43,22 @@
         .balance {
             background: linear-gradient(135deg, #f59e0b, #fbbf24);
             color: black;
-            padding: 8px 28px; /* Lengthened */
+            padding: 6px 20px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 18px;
-            flex-grow: 1;
+            font-size: 17px;
             text-align: center;
             white-space: nowrap;
+            flex-grow: 1;
         }
         .wallet {
             background: #27272a;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 50px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 15px;
             flex-shrink: 0;
         }
 
@@ -168,13 +170,13 @@
     </style>
 </head>
 <body>
-    <!-- Top Bar - Equal inline + longer balance -->
+    <!-- Top Bar - Compressed -->
     <div class="top-bar">
         <div id="player-info" class="player">
             👤 <span id="player-name">Player</span>
         </div>
         <div id="balance" class="balance">50.85 Dhu</div>
-        <div class="wallet">🔗 💼 Wallet</div>
+        <div class="wallet">🔗 Wallet</div>
     </div>
 
     <div class="main">
@@ -249,7 +251,6 @@
         function startMining() {
             if (isMining) return;
             isMining = true;
-
             actionBtn.textContent = "MINING...";
             actionBtn.disabled = true;
 
@@ -262,7 +263,6 @@
                 progress = Math.min((elapsed / duration) * 100, 100);
                 const offset = 665 * (1 - progress / 100);
                 progressRing.setAttribute('stroke-dashoffset', offset);
-
                 if (progress >= 100) finishMining();
             }, 30);
         }
@@ -285,10 +285,8 @@
                 balance += mined;
                 mined = 0;
                 alert("✅ Reward Claimed Successfully!");
-                
                 actionBtn.textContent = "TAP TO START MINING";
                 actionBtn.onclick = startMining;
-                
                 progressRing.setAttribute('stroke-dashoffset', 665);
                 isMining = false;
                 updateUI();
