@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dawhu Miner</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #1a0033, #2d004d);
+            color: white;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        .top-bar {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,0,0,0.4);
+        }
+        .player {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        .balance {
+            background: linear-gradient(135deg, #f97316, #eab308);
+            color: black;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .wallet {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main {
+            text-align: center;
+            padding: 20px 20px 10px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #e0e7ff;
+        }
+        .mine-circle {
+            width: 260px;
+            height: 260px;
+            margin: 20px auto;
+            background: radial-gradient(circle, #3b82f6, #1e40af);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            font-weight: bold;
+            box-shadow: 0 0 60px #22d3ee,
+                        0 0 120px rgba(34, 211, 238, 0.6);
+            border: 12px solid #10b981;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .mine-circle:active {
+            transform: scale(0.92);
+        }
+
+        .mined {
+            font-size: 18px;
+            margin: 15px 0;
+            color: #a5b4fc;
+        }
+        .claim-btn {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 16px 40px;
+            border-radius: 50px;
+            border: none;
+            width: 90%;
+            max-width: 320px;
+            margin: 20px auto;
+            box-shadow: 0 0 25px #34d399;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            padding: 10px 0 8px;
+            border-top: 1px solid #6b21a8;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            color: #c4d0ff;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .nav-item.active {
+            color: #facc15;
+        }
+        .nav-icon {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="player">
+            👤 Player
+        </div>
+        <div id="balance" class="balance">39.09 Dhu</div>
+        <div class="wallet">
+            💼 Wallet
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="title">Mining $Dawhu ⛏️</div>
+        
+        <div id="mine-button" class="mine-circle">$DHU</div>
+        
+        <div class="mined">Mined: <span id="mined-amount">2.25</span> $DHU</div>
+        
+        <button onclick="claimReward()" class="claim-btn">CLAIM REWARD</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            HOME
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            TASKS
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">👥</span>
+            INVITE
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">👤</span>
+            PROFILE
+        </div>
+    </nav>
+
+    <script>
+        const tg = window.Telegram.WebApp || {};
+        if (tg.expand) tg.expand();
+        if (tg.ready) tg.ready();
+
+        let balance = 39.09;
+        let mined = 2.25;
+
+        function updateUI() {
+            document.getElementById('balance').textContent = balance.toFixed(2) + " Dhu";
+            document.getElementById('mined-amount').textContent = mined.toFixed(2);
+        }
+
+        function mine() {
+            mined += 0.15 + Math.random() * 0.1;
+            balance += 0.08;
+            
+            const btn = document.getElementById('mine-button');
+            btn.style.transform = 'scale(0.88)';
+            setTimeout(() => btn.style.transform = '', 120);
+
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            updateUI();
+        }
+
+        function claimReward() {
+            if (mined > 0) {
+                balance += mined;
+                mined = 0;
+                alert("✅ Reward Claimed!");
+                updateUI();
+            }
+        }
+
+        // Mining button
+        document.getElementById('mine-button').addEventListener('click', mine);
+        document.getElementById('mine-button').addEventListener('touchstart', e => {
+            e.preventDefault();
+            mine();
+        });
+
+        // Auto mining
+        setInterval(() => {
+            mined += 0.03;
+            updateUI();
+        }, 1200);
+
+        updateUI();
+    </script>
+</body>
+</html>
