@@ -486,14 +486,11 @@
             updateUI();
         }
 
-        // New Task Logic - Only this part was added
         function doTask(taskId) {
             const btn = document.getElementById(`task-btn-${taskId}`);
             
-            // Open link
             window.open("https://t.me/dawhusquotex", "_blank");
             
-            // 5 second countdown
             btn.disabled = true;
             let timeLeft = 5;
             btn.textContent = `Wait ${timeLeft}s...`;
@@ -523,30 +520,22 @@
         function switchTab(n) {
             document.querySelectorAll('.nav-item').forEach((item, i) => item.classList.toggle('active', i === n));
 
+            // Hide all sections first
+            homeSection.style.display = 'none';
+            taskSection.style.display = 'none';
+            inviteSection.style.display = 'none';
+            settingsSection.style.display = 'none';
+
+            // Show only the selected one
             if (n === 0) {
                 homeSection.style.display = 'block';
-                settingsSection.style.display = 'none';
-                inviteSection.style.display = 'none';
-                taskSection.style.display = 'none';
-            } 
-            else if (n === 1) {
-                homeSection.style.display = 'none';
-                settingsSection.style.display = 'none';
-                inviteSection.style.display = 'none';
+            } else if (n === 1) {
                 taskSection.style.display = 'block';
-            }
-            else if (n === 2) {
-                homeSection.style.display = 'none';
-                settingsSection.style.display = 'none';
+            } else if (n === 2) {
                 inviteSection.style.display = 'block';
-                taskSection.style.display = 'none';
-            }
-            else if (n === 3) {
-                homeSection.style.display = 'none';
+            } else if (n === 3) {
                 settingsSection.style.display = 'block';
-                inviteSection.style.display = 'none';
-                taskSection.style.display = 'none';
-            } 
+            }
         }
 
         // Initialize
@@ -556,4 +545,4 @@
         actionBtn.onclick = startMining;
     </script>
 </body>
-</html>
+    </html>
